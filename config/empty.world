@@ -1,0 +1,25 @@
+include "map.inc"
+include "robot.inc"
+
+
+# configure the GUI window
+window
+(
+   size [700.000 700.000]
+   scale 41
+)
+
+# load an environment bitmap
+
+bui4floor
+(
+   bitmap "../bitmaps/autolab.png"
+   size [30 30 0.5]
+)
+
+bigbob
+(
+		  name "bot1"
+		  pose [ 0 0 0 0]
+		  color "green"
+)
