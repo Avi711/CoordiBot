@@ -6,7 +6,7 @@ include "robot.inc"
 window
 (
    size [700.000 700.000]
-   scale 41
+   scale 23
 )
 
 # load an environment bitmap
