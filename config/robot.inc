@@ -37,5 +37,4 @@ define bigbob position
     drive "diff"
     #sensors attached to bigbob
     bigbobs_sonars( ) # pose [0 0 0 0] is default
-
 )
