@@ -1,5 +1,6 @@
 #include <iostream>
 #include <libplayerc++/playerc++.h>
+#include "../include/graph.h"
 
 using namespace std;
 using namespace PlayerCc;
@@ -18,6 +19,8 @@ int main(int argc, char *argv[]) {
     pos2d.RequestGeom();
     sonarProxy.RequestGeom();
     pos2d.SetSpeed(10,0);
+
+    Vertex* x = new Vertex(0,0);
 
     while (true) {
         // read from the proxies
