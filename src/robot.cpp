@@ -2,8 +2,23 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
+#include <map>
 
-#define deg90 1.57079633
+
+using namespace std;
+
+double getRotationSpeed(double deg_diff) {
+    if (deg_diff > ANGLE_PRECISION_1) {
+        return ROTATION_SPEED_1;
+    } else if (deg_diff > ANGLE_PRECISION_2) {
+        return ROTATION_SPEED_2;
+    } else if (deg_diff > ANGLE_PRECISION_3) {
+        return ROTATION_SPEED_3;
+    } else {
+        return ROTATION_SPEED_4;
+    }
+}
+
 
 Robot::Robot() : robot("localhost", 6665), pos2d(&robot, 0), sonarProxy(&robot, 0) {
     robot.Read();
@@ -12,11 +27,11 @@ Robot::Robot() : robot("localhost", 6665), pos2d(&robot, 0), sonarProxy(&robot, 
     // request geometries
     pos2d.RequestGeom();
     sonarProxy.RequestGeom();
-    pos2d.SetSpeed(10,0);
+    pos2d.SetSpeed(10, 0);
 }
 
 void Robot::setSpeed(double x, double y) {
-    pos2d.SetSpeed(x,y);
+    pos2d.SetSpeed(x, y);
 }
 
 double Robot::getSonar(int index) {
@@ -27,10 +42,10 @@ double Robot::getSonar(int index) {
 void Robot::goTo(Vertex v) {
     double vy = v.getY(), vx = v.getX();
     this->rotateToVertex(v);
-    while (true){
+    while (true) {
         std::array<double, 3> pos = this->getPos();
         double ry = pos[1], rx = pos[0];
-        if(std::abs(vx - rx) < 0.21 and std::abs(vy - ry) < 0.21){
+        if (std::abs(vx - rx) < 0.21 and std::abs(vy - ry) < 0.21) {
             this->setSpeed(0, 0);
             return;
         }
@@ -39,32 +54,34 @@ void Robot::goTo(Vertex v) {
 }
 
 void Robot::navigateTo(Vertex v) {
-    std::vector<Vertex> route = getRoute({},{}); // currently uses mock start and goal points
-    for(Vertex vertex:route){
+    std::vector<Vertex> route = getRoute({}, {}); // currently uses mock start and goal points
+    for (Vertex vertex: route) {
         this->goTo(vertex);
     }
 }
 
-// TODO fix this function (the farther you there faster you turn, for more information ask avi/leonardo)
 void Robot::rotateToVertex(Vertex v) {
     std::array<double, 3> pos = this->getPos();
-    double deg = getDegree({pos[0],pos[1]},{v.getX(),v.getY()});
+    double deg = getDegree({pos[0], pos[1]}, {v.getX(), v.getY()});
+    cout << "degree: " << deg << endl;
+
     while (true) {
-        std::cout<<pos[2]<<std::endl;
-        if(std::abs(pos[2]-deg)<0.001){
+        double deg_diff = abs(pos[2] - deg);
+        if (deg_diff < 0.005) {
             this->setSpeed(0, 0);
             return;
         }
-        if(deg>0){
-            this->setSpeed(0, 0.25);
-        } else{
-            this->setSpeed(0, -0.25);
-        }
+        double rotation_speed = getRotationSpeed(deg_diff);
+        if (deg > 0)
+            this->setSpeed(0, rotation_speed);
+        else
+            this->setSpeed(0, rotation_speed * -1);
         pos = this->getPos();
+        cout << "rotation speed: " << rotation_speed << " position: " << pos[2] << endl;
     }
 }
 
 std::array<double, 3> Robot::getPos() {
     robot.Read();
-    return std::array<double, 3>{pos2d.GetXPos(),pos2d.GetYPos(),pos2d.GetYaw()};
+    return std::array<double, 3>{pos2d.GetXPos(), pos2d.GetYPos(), pos2d.GetYaw()};
 }
