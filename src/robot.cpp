@@ -43,8 +43,8 @@ void Robot::goTo(Vertex v) {
     double vy = v.getY(), vx = v.getX();
     this->rotateToVertex(v);
     while (true) {
-        std::array<double, 3> pos = this->getPos();
-        double ry = pos[1], rx = pos[0];
+        Position pos = this->getPos();
+        double ry = pos.getY(), rx = pos.getX();
         if (std::abs(vx - rx) < 0.21 and std::abs(vy - ry) < 0.21) {
             this->setSpeed(0, 0);
             return;
@@ -61,27 +61,24 @@ void Robot::navigateTo(Vertex v) {
 }
 
 void Robot::rotateToVertex(Vertex v) {
-    std::array<double, 3> pos = this->getPos();
-    double deg = getDegree({pos[0], pos[1]}, {v.getX(), v.getY()});
+    Position pos = this->getPos();
+    double deg = getDegree({pos.getX(), pos.getY()}, {v.getX(), v.getY()});
     cout << "degree: " << deg << endl;
-
+    double rotation_speed;
     while (true) {
-        double deg_diff = abs(pos[2] - deg);
+        double deg_diff = abs(pos.geDeg() - deg);
         if (deg_diff < 0.005) {
             this->setSpeed(0, 0);
             return;
         }
-        double rotation_speed = getRotationSpeed(deg_diff);
-        if (deg > 0)
-            this->setSpeed(0, rotation_speed);
-        else
-            this->setSpeed(0, rotation_speed * -1);
+        rotation_speed = getRotationSpeed(deg_diff) * std::copysign(1.0, deg - pos.geDeg());
+        this->setSpeed(0, rotation_speed);
         pos = this->getPos();
-        cout << "rotation speed: " << rotation_speed << " position: " << pos[2] << endl;
+        cout << "rotation speed: " << rotation_speed << " position: " << pos.geDeg() << endl;
     }
 }
 
-std::array<double, 3> Robot::getPos() {
+Position Robot::getPos() {
     robot.Read();
-    return std::array<double, 3>{pos2d.GetXPos(), pos2d.GetYPos(), pos2d.GetYaw()};
+    return {pos2d.GetXPos(),pos2d.GetYPos(), pos2d.GetYaw()};
 }
