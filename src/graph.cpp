@@ -6,7 +6,7 @@ double Vertex::getY() {return this->y;}
 
 // TODO implement this func for real
 std::vector<Vertex> getRoute(Vertex start, Vertex goal){
-    std::vector<Vertex> v = {{1.33,-5.7}, {1.33,3}};
+    std::vector<Vertex> v = {{1.33,-5.7}, {1.48,3}};
     return v;
 }
 
