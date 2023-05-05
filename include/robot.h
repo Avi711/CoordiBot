@@ -1,12 +1,11 @@
-//
-// Created by avi on 4/30/23.
-//
-#include <libplayerc++/playerc++.h>
-using namespace PlayerCc;
 
 #ifndef COORDIBOT_ROBOT_H
 #define COORDIBOT_ROBOT_H
 
+#include <libplayerc++/playerc++.h>
+#include "graph.h"
+#include <array>
+using namespace PlayerCc;
 
 class Robot {
     PlayerClient robot;
@@ -14,12 +13,12 @@ class Robot {
     RangerProxy sonarProxy;
 public:
     Robot();
-    double getXPos();
-    double getYPos();
-    double getYaw();
-    void setSpeed(double x, double y);
+    std::array<double,3> getPos();
     double getSonar(int index);
+    void setSpeed(double x, double y);
+    void rotateToVertex(Vertex v);
+    void goTo(Vertex v);
+    void navigateTo(Vertex v);
 };
-
 
 #endif //COORDIBOT_ROBOT_H
