@@ -45,13 +45,15 @@ void Robot::navigateTo(Vertex v) {
     }
 }
 
-// TODO fix this function
+// TODO fix this function (the farther you there faster you turn, for more information ask avi/leonardo)
 void Robot::rotateToVertex(Vertex v) {
     std::array<double, 3> pos = this->getPos();
     double deg = getDegree({pos[0],pos[1]},{v.getX(),v.getY()});
     while (true) {
-        if(std::abs(pos[2]-deg)<0.01){
-            break;
+        std::cout<<pos[2]<<std::endl;
+        if(std::abs(pos[2]-deg)<0.001){
+            this->setSpeed(0, 0);
+            return;
         }
         if(deg>0){
             this->setSpeed(0, 0.25);
