@@ -6,10 +6,11 @@ double Vertex::getY() {return this->y;}
 
 // TODO implement this func for real
 std::vector<Vertex> getRoute(Vertex start, Vertex goal){
-    std::vector<Vertex> v = {{1.33,-5.7}, {1.48,3}};
+    std::vector<Vertex> v = {{1.33,-5.7}, {1.3,3}};
     return v;
 }
 
+// TODO fix this func
 double getDegree(Vertex start, Vertex end){
     double dx = end.getX() - start.getX();
     double dy = end.getY() - start.getY();
