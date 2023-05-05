@@ -5,6 +5,7 @@
 #include <libplayerc++/playerc++.h>
 #include "graph.h"
 #include <array>
+#include "constants.h"
 using namespace PlayerCc;
 
 class Robot {
@@ -19,6 +20,9 @@ public:
     void rotateToVertex(Vertex v);
     void goTo(Vertex v);
     void navigateTo(Vertex v);
+
 };
+
+
 
 #endif //COORDIBOT_ROBOT_H
