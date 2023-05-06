@@ -13,7 +13,7 @@ window
 
 bui4floor
 (
-   bitmap "../bitmaps/autolab.png"
+   bitmap "../bitmaps/CS-bldg-3.png"
    size [30 30 0.5]
 )
 

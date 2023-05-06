@@ -22,7 +22,7 @@ define bigbobs_sonars ranger
 define bigbob position
 (
     #actual size
-    size [1 1 0.1]
+    size [0.3 0.3 0.1]
     block(
         points 6
         point[0] [0.75 0]
