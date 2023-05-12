@@ -14,7 +14,7 @@ window
 bui4floor
 (
    bitmap "../bitmaps/CS-bldg-3.png"
-   size [30 30 0.5]
+   size [40 54 2.5]
 )
 
 bigbob
