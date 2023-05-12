@@ -20,6 +20,6 @@ bui4floor
 bigbob
 (
 		  name "bot1"
-		  pose [ -7.22 -5.70 0 0]
+		  pose [ -3.58 19.57 0 0]
 		  color "green"
 )
