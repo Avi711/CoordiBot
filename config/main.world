@@ -13,13 +13,13 @@ window
 
 bui4floor
 (
-   bitmap "../bitmaps/autolab.png"
-   size [30 30 0.5]
+   bitmap "../bitmaps/CS-bldg-3.png"
+   size [40 54 2.5]
 )
 
 bigbob
 (
 		  name "bot1"
-		  pose [ -7.22 -5.70 0 0]
+		  pose [ -1.32 -10.09 0 0]
 		  color "green"
 )
