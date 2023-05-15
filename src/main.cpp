@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
     // enable motors
     pos2d.SetMotorEnable(1);
 
-    // request geometries
+    // geometries request
     pos2d.RequestGeom();
     sonarProxy.RequestGeom();
     pos2d.SetSpeed(10,0);
