@@ -35,9 +35,7 @@ std::map<int, Vertex> getMap() {
             double x = std::stod(cells[1]);
             double y = std::stod(cells[2]);
 
-            Vertex vertex;
-            vertex.x = x;
-            vertex.y = y;
+            Vertex vertex(x,y);
             // Assign additional fields as needed
 
             data[id] = vertex;
