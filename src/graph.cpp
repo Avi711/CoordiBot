@@ -1,8 +1,33 @@
 #include "../include/graph.h"
 
-Vertex::Vertex(double x, double y) :x(x),y(y){}
+Vertex::Vertex(double x, double y) :x(x),y(y){
+    neighbors = new std::vector<int>();
+}
+
+Vertex::Vertex(int id, double x, double y) :id(id), x(x),y(y){
+    neighbors = new std::vector<int>();
+}
+
 double Vertex::getX() {return this->x;}
 double Vertex::getY() {return this->y;}
+
+int Vertex::getId() const {
+    return id;
+}
+
+std::vector<int> *Vertex::getNeighbors() {
+    return neighbors;
+}
+
+void Vertex::addNeighbor(int n) {
+    neighbors->push_back(n);
+}
+
+double Vertex::getDistance(const Vertex& other) {
+    double d_x = x - other.x;
+    double d_y = y - other.y;
+    return std::sqrt(d_x * d_x + d_y * d_y);
+}
 
 // TODO implement this func for real with dijkstra or something else
 std::vector<Vertex> getRoute(Vertex start, Vertex goal){
@@ -27,3 +52,13 @@ double getDegree(Vertex start, Vertex end){
     return std::atan2(dy, dx);
 }
 
+Node::Node(const Vertex& v, Node *p): v(v), parent(p), state(v.getId()) {
+    if (parent != nullptr) {
+        path_cost = parent->path_cost + this->v.getDistance(parent->v);
+        depth = parent->depth + 1;
+    }
+    else {
+        path_cost = 0;
+        depth = 0;
+    }
+}
