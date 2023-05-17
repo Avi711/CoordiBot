@@ -9,7 +9,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} `pkg-config --cflags playerc++` -g")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} `pkg-config --cflags playerc` -g")
 
 add_executable(CoordiBot
-        src/main.cpp src/graph.cpp src/robot.cpp)
+        src/main.cpp src/graph.cpp src/robot.cpp include/utils.h)
 
 target_link_libraries(CoordiBot PUBLIC `pkg-config --libs playerc++`)
 

@@ -1,4 +1,7 @@
 #include "../include/graph.h"
+#include <iostream>
+
+using namespace std;
 
 Vertex::Vertex(double x, double y) :x(x),y(y){
     neighbors = new std::vector<int>();
@@ -7,9 +10,6 @@ Vertex::Vertex(double x, double y) :x(x),y(y){
 Vertex::Vertex(int id, double x, double y) :id(id), x(x),y(y){
     neighbors = new std::vector<int>();
 }
-
-double Vertex::getX() {return this->x;}
-double Vertex::getY() {return this->y;}
 
 int Vertex::getId() const {
     return id;
@@ -23,12 +23,6 @@ void Vertex::addNeighbor(int n) {
     neighbors->push_back(n);
 }
 
-double Vertex::getDistance(const Vertex& other) {
-    double d_x = x - other.x;
-    double d_y = y - other.y;
-    return std::sqrt(d_x * d_x + d_y * d_y);
-}
-
 // TODO implement this func for real with dijkstra or something else
 std::vector<Vertex> getRoute(Vertex start, Vertex goal){
     std::vector<Vertex> v = {
@@ -40,7 +34,7 @@ std::vector<Vertex> getRoute(Vertex start, Vertex goal){
     return v;
 }
 
-double getDegree(Vertex start, Vertex end){
+double getDegree(Vertex start, Vertex end)  {
     double dx = end.getX() - start.getX();
     double dy = end.getY() - start.getY();
     if (dy == 0 && dx < 0)
@@ -52,13 +46,31 @@ double getDegree(Vertex start, Vertex end){
     return std::atan2(dy, dx);
 }
 
+double getDistance(const Vertex& v1, const Vertex& v2) {
+    double d_x = v1.getX() - v2.getX();
+    double d_y = v1.getY() - v2.getY();
+    return std::sqrt(d_x * d_x + d_y * d_y);
+}
+
 Node::Node(const Vertex& v, Node *p): v(v), parent(p), state(v.getId()) {
     if (parent != nullptr) {
-        path_cost = parent->path_cost + this->v.getDistance(parent->v);
+        path_cost = parent->path_cost + getDistance(this->v, parent->v);
         depth = parent->depth + 1;
     }
     else {
         path_cost = 0;
         depth = 0;
     }
+}
+
+Node *Node::getParent() {
+    return parent;
+}
+
+double Node::getPathCost() const {
+    return path_cost;
+}
+
+int Node::getDepth() const {
+    return depth;
 }
