@@ -42,6 +42,7 @@ double Robot::getSonar(int index) {
 void Robot::goTo(Vertex v) {
     double vy = v.getY(), vx = v.getX();
     this->rotateToVertex(v);
+    cout << "after rotate" << endl;
     while (true) {
         Position pos = this->getPos();
         double ry = pos.getY(), rx = pos.getX();
@@ -66,15 +67,18 @@ void Robot::rotateToVertex(Vertex v) {
     cout << "degree: " << deg << endl;
     double rotation_speed;
     while (true) {
-        double deg_diff = abs(pos.geDeg() - deg);
+        double deg_diff = abs(pos.getDeg() - deg);
+        cout << deg_diff << endl;
         if (deg_diff < 0.005) {
             this->setSpeed(0, 0);
             return;
         }
-        rotation_speed = getRotationSpeed(deg_diff) * std::copysign(1.0, deg - pos.geDeg());
+        rotation_speed = getRotationSpeed(deg_diff) * std::copysign(1.0, deg - pos.getDeg());
+        if (deg > 0 && pos.getDeg() < 0)
+            rotation_speed *= -1;
         this->setSpeed(0, rotation_speed);
         pos = this->getPos();
-        cout << "rotation speed: " << rotation_speed << " position: " << pos.geDeg() << endl;
+        cout << "rotation speed: " << rotation_speed << " position: " << pos.getDeg() << endl;
     }
 }
 

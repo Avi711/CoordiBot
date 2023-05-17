@@ -14,9 +14,9 @@ class Position {
     double deg;
 public:
     Position(double x, double y,double deg) : x(x), y(y), deg(deg) {};
-    double getX() { return x; }
-    double getY() { return y; }
-    double geDeg() { return deg; }
+    double getX() const { return x; }
+    double getY() const { return y; }
+    double getDeg() const { return deg; }
 };
 
 
