@@ -29,11 +29,21 @@ public:
     double path_cost;
     Node(const Vertex& v, Node* p = nullptr);
     Node* getParent();
+    Vertex getVertex() const;
     double getPathCost() const;
+    void setPathCost(double cost);
+    int getState() const;
     int getDepth() const;
+    std::vector<Vertex> getPath();
+    std::vector<Node*> expand();
 };
 
 std::vector<Vertex> getRoute(Vertex start, Vertex goal);
 double getDegree(Vertex start, Vertex end);
 double getDistance(const Vertex& v1, const Vertex& v2);
+
+std::vector<Vertex> A_STAR(Vertex start, Vertex goal);
+
+
+
 #endif //COORDIBOT_GRAPH_H
