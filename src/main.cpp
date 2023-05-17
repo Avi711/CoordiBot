@@ -1,13 +1,29 @@
 #include "../include/robot.h"
 #include "../include/graph.h"
+#include "../include/utils.h"
 #include <iostream>
 #include <queue>
 #include "map"
+#include "../include/graph.h"
 
 using namespace std;
 
 int main(int argc, char *argv[]) {
 
+    std::map<int, Vertex*>* mp = generateMap();
+
+
+    Vertex start(1,-8.7,-9.65);
+    Vertex goal(27,-12.48,15.99);
+    std::vector<Vertex> path = A_STAR(start, goal,mp);
+
+
+    for (Vertex v : path) {
+        cout << v.getId() << endl;
+    }
+
+
+    return 0;
 
     Robot bob;
     Vertex v(1,2,3);

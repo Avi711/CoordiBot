@@ -24,7 +24,7 @@ std::vector<Vertex> getRoute(Vertex start, Vertex goal){
     return v;
 }
 
-Node::Node(const Vertex& v, Node *p): v(v), parent(p), state(v.getId()) {
+Node::Node(const Vertex& v,const Node *p): v(v), parent(p), state(v.getId()) {
     if (parent != nullptr) {
         path_cost = parent->path_cost + getDistance(this->v, parent->v);
         depth = parent->depth + 1;
@@ -35,7 +35,7 @@ Node::Node(const Vertex& v, Node *p): v(v), parent(p), state(v.getId()) {
     }
 }
 
-Node *Node::getParent() { return parent; }
+const Node *Node::getParent() { return parent; }
 
 double Node::getPathCost() const { return path_cost; }
 
@@ -47,7 +47,7 @@ int Node::getState() const { return state; }
 
 vector<Vertex> Node::getPath() {
     vector<Vertex> res;
-    Node* cur = this;
+    const Node* cur = this;
     while(cur) {
         res.push_back(cur->v);
         cur = cur->parent;
@@ -57,8 +57,14 @@ vector<Vertex> Node::getPath() {
 }
 
 // To do
-std::vector<Node *> Node::expand() {
-    return {};
+std::vector<Node *> Node::expand(std::map<int, Vertex*>* mp) const {
+    std::vector<Node *> temp;
+    vector<int>* v_list = mp->at(this->state)->getNeighbors();
+    for (int id : *v_list) {
+        Vertex new_v = *mp->at(id);
+        temp.push_back(new Node(new_v, this));
+    }
+    return temp;
 }
 
 void Node::setPathCost(double cost) { this->path_cost = cost; }
@@ -82,7 +88,7 @@ double getDistance(const Vertex& v1, const Vertex& v2) {
 }
 
 
-std::vector<Vertex> A_STAR(Vertex start, Vertex goal) {
+std::vector<Vertex> A_STAR(Vertex start, Vertex goal, std::map<int, Vertex*>* mp) {
     auto compareNodes = [goal](const Node* lhs, const Node* rhs) {
         return lhs->getPathCost() + getDistance(lhs->getVertex(), goal) > rhs->getPathCost() + getDistance(rhs->getVertex(), goal); // Smallest path first
     };
@@ -98,7 +104,7 @@ std::vector<Vertex> A_STAR(Vertex start, Vertex goal) {
         if (node->getState() == goal.getId())
             return node->getPath();
         close_list[node->getState()] = true;
-        vector<Node*> child_list = node->expand();
+        vector<Node*> child_list = node->expand(mp);
         for (Node* child: child_list) {
             if (close_list[child->getState()] == false && frontier_map[child->getState()] == nullptr) {
                 frontier.push(child);
@@ -111,6 +117,5 @@ std::vector<Vertex> A_STAR(Vertex start, Vertex goal) {
             }
         }
     }
-
     return {};
 }

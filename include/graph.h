@@ -3,6 +3,7 @@
 #define COORDIBOT_GRAPH_H
 #include <vector>
 #include <cmath>
+#include <map>
 
 class Vertex {
     int id;
@@ -23,18 +24,18 @@ public:
 class Node {
     Vertex v;
     int state;
-    Node* parent;
+    const Node* parent;
     int depth;
 public:
-    Node(const Vertex& v, Node* p = nullptr);
-    Node* getParent();
+    Node(const Vertex& v,const Node* p = nullptr);
+    const Node* getParent();
     Vertex getVertex() const;
     double getPathCost() const;
     void setPathCost(double cost);
     int getState() const;
     int getDepth() const;
     std::vector<Vertex> getPath();
-    std::vector<Node*> expand();
+    std::vector<Node*> expand(std::map<int, Vertex*>* mp) const;
     double path_cost;//TODO switch to private
 
 };
@@ -43,7 +44,7 @@ std::vector<Vertex> getRoute(Vertex start, Vertex goal);
 double getDegree(Vertex start, Vertex end);
 double getDistance(const Vertex& v1, const Vertex& v2);
 
-std::vector<Vertex> A_STAR(Vertex start, Vertex goal);
+std::vector<Vertex> A_STAR(Vertex start, Vertex goal, std::map<int, Vertex*>* mp);
 
 
 

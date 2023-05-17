@@ -10,10 +10,10 @@
 #include <filesystem>
 
 
-std::map<int, Vertex*> getMap() {
-    std::map<int, Vertex*> data;
+std::map<int, Vertex *> *generateMap() {
+    auto *data = new std::map<int, Vertex *>;
     std::filesystem::path relativePath = "bitmaps/vertices.csv";
-    std::ifstream file(std::filesystem::current_path()/relativePath);
+    std::ifstream file(std::filesystem::current_path() / relativePath);
     if (!file.is_open()) {
         std::cout << "Failed to open the CSV file." << std::endl;
         return data;
@@ -31,22 +31,17 @@ std::map<int, Vertex*> getMap() {
             cells.push_back(cell);
         }
 
-            int id = std::stod(cells[0]);
-            double x = std::stod(cells[1]);
-            double y = std::stod(cells[2]);
+        int id = std::stod(cells[0]);
+        double x = std::stod(cells[1]);
+        double y = std::stod(cells[2]);
 
-            Vertex* vertex = new Vertex(id,x,y);
-            for (int i = 4 ; i< cells.size();i++)
-                {
-                    if(cells[i]!="") {
-                        vertex->addNeighbor(stoi(cells[i]));
-
-                    }
-
-                }
-
-            data[id] = vertex;
-
+        Vertex *vertex = new Vertex(id, x, y);
+        for (int i = 4; i < cells.size(); i++) {
+            if (cells[i] != "") {
+                vertex->addNeighbor(stoi(cells[i]));
+            }
+        }
+        (*data)[id] = vertex;
     }
     file.close();
     return data;

@@ -1,8 +1,10 @@
 #include "../include/robot.h"
+#include "../include/utils.h"
 #include <iostream>
 #include <chrono>
 #include <thread>
 #include <map>
+
 
 
 using namespace std;
@@ -28,6 +30,7 @@ Robot::Robot() : robot("localhost", 6665), pos2d(&robot, 0), sonarProxy(&robot, 
     pos2d.RequestGeom();
     sonarProxy.RequestGeom();
     pos2d.SetSpeed(10, 0);
+    this->map = generateMap();
 }
 
 void Robot::setSpeed(double x, double y) {
@@ -85,4 +88,8 @@ void Robot::rotateToVertex(Vertex v) {
 Position Robot::getPos() {
     robot.Read();
     return {pos2d.GetXPos(),pos2d.GetYPos(), pos2d.GetYaw()};
+}
+
+std::map<int, Vertex *>* Robot::getMap() {
+    return this->map;
 }

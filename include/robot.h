@@ -6,6 +6,7 @@
 #include "graph.h"
 #include <array>
 #include "constants.h"
+#include <map>
 using namespace PlayerCc;
 
 class Position {
@@ -24,6 +25,7 @@ class Robot {
     PlayerClient robot;
     Position2dProxy pos2d;
     RangerProxy sonarProxy;
+    std::map<int, Vertex*>* map;
 public:
     Robot();
     Position getPos();
@@ -32,6 +34,7 @@ public:
     void rotateToVertex(Vertex v);
     void goTo(Vertex v);
     void navigateTo(Vertex v);
+    std::map<int, Vertex*>* getMap();
 };
 
 #endif //COORDIBOT_ROBOT_H
