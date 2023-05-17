@@ -26,6 +26,7 @@ class Node {
     int state;
     const Node* parent;
     int depth;
+    double path_cost;
 public:
     Node(const Vertex& v,const Node* p = nullptr);
     const Node* getParent();
@@ -36,8 +37,6 @@ public:
     int getDepth() const;
     std::vector<Vertex> getPath();
     std::vector<Node*> expand(std::map<int, Vertex*>* mp) const;
-    double path_cost;//TODO switch to private
-
 };
 
 std::vector<Vertex> getRoute(Vertex start, Vertex goal);

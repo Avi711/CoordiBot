@@ -47,13 +47,13 @@ int main(int argc, char *argv[]) {
         cout << "id: " << v.getId() << endl;
     }
 
-    n1->path_cost = 5;
-    n2->path_cost = 4;
-    n3->path_cost = 3;
+    n1->setPathCost(5);
+    n2->setPathCost(4);
+    n3->setPathCost(3);
     nodeQueue.push(n3);
     nodeQueue.push(n1);
     nodeQueue.push(n2);
-    cout << nodeQueue.top()->path_cost << endl;
+    cout << nodeQueue.top()->getPathCost() << endl;
 
     return 0;
 }
