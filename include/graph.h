@@ -39,7 +39,7 @@ public:
     std::vector<Node*> expand(std::map<int, Vertex*>* mp) const;
 };
 
-std::vector<Vertex> getRoute(Vertex start, Vertex goal);
+std::vector<Vertex> getRoute(Vertex start, Vertex goal, std::map<int, Vertex*>* mp);
 double getDegree(Vertex start, Vertex end);
 double getDistance(const Vertex& v1, const Vertex& v2);
 

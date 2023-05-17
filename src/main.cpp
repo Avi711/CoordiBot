@@ -23,11 +23,11 @@ int main(int argc, char *argv[]) {
     }
 
 
-    return 0;
-
     Robot bob;
     Vertex v(1,2,3);
-    bob.navigateTo({}); // currently this will move to a mock location
+    bob.navigateTo({19,11.94,10.22}); // currently this will move to a mock location
+
+    return 0;
 
     Vertex target(1,1,2);
     auto compareNodes = [target](const Node* lhs, const Node* rhs) {

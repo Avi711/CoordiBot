@@ -56,12 +56,18 @@ void Robot::goTo(Vertex v) {
         this->setSpeed(1, 0);
     }
 }
-
-void Robot::navigateTo(Vertex v) {
-    std::vector<Vertex> route = getRoute({}, {}); // currently uses mock start and goal points
+// return -1 if can't navigate (no target id)
+int Robot::navigateTo(Vertex v) {
+    if (v.getId() == -1) {
+        cout << "No vertex id to navigate to.";
+        return -1;
+    }
+    Vertex cur = *goToNearestPoint();
+    std::vector<Vertex> route = getRoute(cur, v, this->map); // currently uses mock start and goal points
     for (Vertex vertex: route) {
         this->goTo(vertex);
     }
+    return 0;
 }
 
 void Robot::rotateToVertex(Vertex v) {
@@ -92,4 +98,20 @@ Position Robot::getPos() {
 
 std::map<int, Vertex *>* Robot::getMap() {
     return this->map;
+}
+
+Vertex* Robot::goToNearestPoint() {
+    double min_dist = INT_MAX;
+    Vertex *min_vertex;
+    Position cur_pos = this->getPos();
+    Vertex cur_vertex(cur_pos.getX(), cur_pos.getY());
+    for (auto p : *this->map) {
+        double dist = getDistance(cur_vertex, *p.second);
+        if (dist < min_dist) {
+            min_vertex = p.second;
+            min_dist = dist;
+        }
+    }
+    this->goTo(*min_vertex);
+    return min_vertex;
 }
