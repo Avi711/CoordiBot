@@ -7,19 +7,19 @@
 #include <sstream>
 #include <map>
 #include <vector>
+#include <filesystem>
 
 
-std::map<int, Vertex> getMap() {
-    std::map<int, Vertex> data;
-
-    std::ifstream file("/home/kehat/Desktop/CoordiBot/bitmaps/vertices.csv");
+std::map<int, Vertex*> getMap() {
+    std::map<int, Vertex*> data;
+    std::filesystem::path relativePath = "bitmaps/vertices.csv";
+    std::ifstream file(std::filesystem::current_path()/relativePath);
     if (!file.is_open()) {
         std::cout << "Failed to open the CSV file." << std::endl;
         return data;
     }
 
     std::string line;
-    std::getline(file, line); // Read and discard the header line
 
     while (std::getline(file, line)) {
         std::stringstream ss(line);
@@ -31,19 +31,24 @@ std::map<int, Vertex> getMap() {
             cells.push_back(cell);
         }
 
-            double id = std::stod(cells[0]);
+            int id = std::stod(cells[0]);
             double x = std::stod(cells[1]);
             double y = std::stod(cells[2]);
 
-            Vertex vertex(x,y);
-            // Assign additional fields as needed
+            Vertex* vertex = new Vertex(id,x,y);
+            for (int i = 4 ; i< cells.size();i++)
+                {
+                    if(cells[i]!="") {
+                        vertex->addNeighbor(stoi(cells[i]));
+
+                    }
+
+                }
 
             data[id] = vertex;
 
     }
-
     file.close();
-
     return data;
 }
 
