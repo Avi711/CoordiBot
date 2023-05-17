@@ -24,9 +24,9 @@ class Node {
     Vertex v;
     int state;
     Node* parent;
+    double path_cost;
     int depth;
 public:
-    double path_cost;
     Node(const Vertex& v, Node* p = nullptr);
     Node* getParent();
     Vertex getVertex() const;
