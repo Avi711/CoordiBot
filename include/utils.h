@@ -7,6 +7,6 @@
 #include "../include/graph.h"
 #include <map>
 
-std::map<int, Vertex*> getMap();
+std::map<int, Vertex*>* generateMap();
 
 #endif //COORDIBOT_UTILS_H
