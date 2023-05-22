@@ -63,9 +63,7 @@ std::vector<Node *> Node::expand(std::map<int, Vertex*>* mp) const {
     std::vector<Node *> temp;
     vector<int>* v_list = mp->at(this->state)->getNeighbors();
     for (int id : *v_list) {
-        cout << "in expand looking for id: " << id << endl;
         Vertex new_v = *mp->at(id);
-        cout << "succesfully looked for " << id << endl;
         temp.push_back(new Node(new_v, this));
     }
     return temp;
@@ -83,6 +81,12 @@ double getDegree(Vertex start, Vertex end)  {
     if (dx == 0 && dy < 0)
         return -M_PI/2;
     return std::atan2(dy, dx);
+}
+
+double getRadiansDistance(double rad1, double rad2) {
+    const double PI = std::acos(-1);
+    double diff = std::fmod(std::abs(rad1 - rad2), 2*PI);
+    return (diff > PI) ? 2*PI - diff : diff;
 }
 
 double getDistance(const Vertex& v1, const Vertex& v2) {
@@ -123,3 +127,5 @@ std::vector<Vertex> A_STAR(Vertex start, Vertex goal, std::map<int, Vertex*>* mp
     }
     return {};
 }
+
+

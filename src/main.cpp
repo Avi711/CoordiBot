@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
 
     Robot bob;
     Vertex v(1,2,3);
-    bob.navigateTo({19,11.94,10.22}); // currently this will move to a mock location
+    bob.navigateTo({10,-12.48,15.99}); // currently this will move to a mock location
 
     return 0;
 

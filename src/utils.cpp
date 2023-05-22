@@ -51,4 +51,3 @@ std::map<int, Vertex *> *generateMap() {
 
 
 
-

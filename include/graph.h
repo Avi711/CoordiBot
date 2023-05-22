@@ -42,6 +42,7 @@ public:
 std::vector<Vertex> getRoute(Vertex start, Vertex goal, std::map<int, Vertex*>* mp);
 double getDegree(Vertex start, Vertex end);
 double getDistance(const Vertex& v1, const Vertex& v2);
+double getRadiansDistance(double rad1, double rad2);
 
 std::vector<Vertex> A_STAR(Vertex start, Vertex goal, std::map<int, Vertex*>* mp);
 
