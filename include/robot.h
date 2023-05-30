@@ -26,15 +26,18 @@ class Robot {
     Position2dProxy pos2d;
     RangerProxy sonarProxy;
     std::map<int, Vertex*>* map;
+    bool isBusy_ = false;
     void goTo(Vertex v);
+    int navigateTo(Vertex v);
+    Vertex* goToNearestPoint();
+    void rotateToVertex(Vertex v);
+    void setSpeed(double x, double y);
 public:
     Robot();
     Position getPos();
     double getSonar(int index);
-    void setSpeed(double x, double y);
-    void rotateToVertex(Vertex v);
-    int navigateTo(Vertex v);
-    Vertex* goToNearestPoint();
+    int navigateTo(int id);
+    bool isBusy();
     std::map<int, Vertex*>* getMap();
 };
 

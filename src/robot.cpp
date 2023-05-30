@@ -28,7 +28,6 @@ Robot::Robot() : robot("localhost", 6665), pos2d(&robot, 0), sonarProxy(&robot, 
     // request geometries
     pos2d.RequestGeom();
     sonarProxy.RequestGeom();
-    pos2d.SetSpeed(10, 0);
     this->map = generateMap();
 }
 
@@ -57,6 +56,21 @@ void Robot::goTo(Vertex v) {
     }
 }
 
+int Robot::navigateTo(int id) {
+    if (this->isBusy_) {
+        cout << "The robot is busy" << endl;
+        return -1;
+    }
+    if (id < 0) {
+        cout << "Not valid ID";
+        return -1;
+    }
+    this->isBusy_ = true;
+    Vertex v = *this->map->at(id);
+    this->navigateTo(v);
+    this->isBusy_ = false;
+    return 0;
+}
 // return -1 if can't navigate (no target id)
 int Robot::navigateTo(Vertex v) {
     cout << "Navigatig to:::::::::::;" << v.getId() << endl;
@@ -124,6 +138,10 @@ Vertex *Robot::goToNearestPoint() {
     }
     this->goTo(*min_vertex);
     return min_vertex;
+}
+
+bool Robot::isBusy() {
+    return this->isBusy_;
 }
 
 

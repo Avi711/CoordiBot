@@ -4,9 +4,18 @@ OUT_DIR = build
 # Set the source directory
 SRC_DIR = src
 
+#JSONCPP_CFLAGS = $(shell pkg-config --cflags jsoncpp)
+#JSONCPP_LDLIBS = $(shell pkg-config --libs jsoncpp)
+
+
+#CPPREST_CFLAGS = -I/usr/include/cpprest
+
+#BOOST_CFLAGS = -I/usr/include/boost
+#BOOST_LDLIBS = -lboost_system -lboost_thread -lboost_chrono
+
 CXXFLAGS = `pkg-config --cflags playerc++` -g
 CFLAGS = `pkg-config --cflags playerc` -g
-LDLIBS = `pkg-config --libs playerc++`
+LDLIBS = `pkg-config --libs playerc++` -lcpprest -lssl -lcrypto
 CC = g++
 
 $(shell mkdir -p build)
