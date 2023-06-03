@@ -2,11 +2,12 @@
 #ifndef COORDIBOT_ROBOT_H
 #define COORDIBOT_ROBOT_H
 
-#include <libplayerc++/playerc++.h>
-#include "graph.h"
 #include <array>
-#include "constants.h"
 #include <map>
+#include <libplayerc++/playerc++.h>
+#include "constants.h"
+#include "graph.h"
+
 using namespace PlayerCc;
 
 class Position {
@@ -14,9 +15,12 @@ class Position {
     double y;
     double deg;
 public:
-    Position(double x, double y,double deg) : x(x), y(y), deg(deg) {};
+    Position(double x, double y, double deg) : x(x), y(y), deg(deg) {};
+
     double getX() const { return x; }
+
     double getY() const { return y; }
+
     double getDeg() const { return deg; }
 };
 
@@ -25,20 +29,31 @@ class Robot {
     PlayerClient robot;
     Position2dProxy pos2d;
     RangerProxy sonarProxy;
-    std::map<int, Vertex*>* map;
+    std::map<int, Vertex *> *map;
     bool isBusy_ = false;
-    void goTo(Vertex v);
-    int navigateTo(Vertex v);
-    Vertex* goToNearestPoint();
-    void rotateToVertex(Vertex v);
-    void setSpeed(double x, double y);
+
+    void goTo(Vertex);
+
+    Vertex *goToNearestPoint();
+
+    void rotateToVertex(Vertex);
+
+    void setSpeed(double, double);
+
 public:
     Robot();
+
     Position getPos();
-    double getSonar(int index);
-    int navigateTo(int id);
+
+    double getSonar(int);
+
+    int navigateTo(Vertex);
+
+    int navigateTo(int);
+
     bool isBusy();
-    std::map<int, Vertex*>* getMap();
+
+    std::map<int, Vertex *> *getMap();
 };
 
 #endif //COORDIBOT_ROBOT_H

@@ -1,7 +1,3 @@
-//
-// Created by avi on 5/5/23.
-//
-
 #ifndef COORDIBOT_CONSTANTS_H
 #define COORDIBOT_CONSTANTS_H
 
@@ -16,6 +12,19 @@
 #define ANGLE_PRECISION_2 0.07
 #define ANGLE_PRECISION_3 0.04
 
+#define BUSY "busy"
+#define AVAILABLE "available"
+
+#define STATUS_PATH "/status"
+#define MAKE_MEETING_PATH "/makeMeeting"
+
+#define INVITED_PARAM "invited"
+#define ESTIMATED_TIME_PARAM "estimatedTime"
+#define STATUS_PARAM "status"
+#define MSG_PARAM "msg"
+#define DATA_PARAM "data"
+
+#define INVITED_ERROR_MSG "Missing invited param"
 
 #define MAX_MOVEMENT_SPEED 1;
 
