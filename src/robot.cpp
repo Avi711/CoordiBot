@@ -84,7 +84,7 @@ int Robot::navigateTo(Vertex v) {
         Position pos = this->getPos();
         double deg = getDegree({pos.getX(), pos.getY()}, {v.getX(), v.getY()});
         double deg_diff = getRadiansDistance(this->getPos().getDeg(), deg);
-        if (deg_diff < 0.005 && (it + 1) != route.end())
+        if (deg_diff < 0.007 && (it + 1) != route.end())
             continue;
         this->goTo(*it);
     }

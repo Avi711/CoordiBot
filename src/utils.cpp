@@ -44,6 +44,23 @@ std::map<int, Vertex *> *generateMap() {
         (*data)[id] = vertex;
     }
     file.close();
+//    for (const auto& pair : *data) {
+//        int key = pair.first;
+//        Vertex* vertex = pair.second;
+//
+//        std::cout << "Key: " << key << std::endl;
+//        std::cout << "Vertex ID: " << vertex->getId() << std::endl;
+//        std::cout << "Vertex X: " << vertex->getX() << std::endl;
+//        std::cout << "Vertex Y: " << vertex->getY() << std::endl;
+//
+//        std::cout << "Neighbors: ";
+//        if (vertex->getNeighbors() != nullptr) {
+//            for (const auto& neighbor : *(vertex->getNeighbors())) {
+//                std::cout << neighbor << " ";
+//            }
+//        }
+//        std::cout << std::endl << std::endl;
+//    }
     return data;
 }
 
