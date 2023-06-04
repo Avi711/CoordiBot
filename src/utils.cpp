@@ -44,7 +44,6 @@ std::map<int, Vertex *> *generateMap() {
         (*data)[id] = vertex;
     }
     file.close();
-//     TODO remove
 //    for (const auto& pair : *data) {
 //        int key = pair.first;
 //        Vertex* vertex = pair.second;

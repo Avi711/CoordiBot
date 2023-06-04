@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
     std::map<int, Vertex*>* mp = generateMap();
     Vertex start(1,-8.7,-9.65);
     Vertex goal(32700,-12.48,15.99);
-    std::vector<Vertex> path = A_STAR(start, goal,mp);//crahes hrere
+    std::vector<Vertex> path = A_STAR(start, goal,mp);
     for (Vertex v : path) {
         cout << v.getId() << endl;
     }
