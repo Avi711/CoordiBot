@@ -129,25 +129,37 @@ std::tuple<double, std::vector<Vertex>> A_STAR(Vertex start, Vertex goal, std::m
 std::tuple<std::vector<Vertex>, double>
 getBestPlan(Vertex current, std::vector<int> &destinations, std::map<int, Vertex *> *mp) {
     std::vector<Vertex> currPlan;
-    double min_dist = INT_MAX;
     for (auto id: destinations) {
         currPlan.push_back(*mp->at(id));
     }
-    std::vector<Vertex> bestPlan;
-    std::sort(currPlan.begin(), currPlan.end());
-    do {
-        double pathCost = 0;
-        for (auto stop: currPlan) {
-            auto route = A_STAR(current, stop, mp);
-            pathCost += std::get<0>(route);
-            current = stop;
+    std::vector<Vertex> bestPlan = {current};
+    Vertex lastStop = current;
+    double planDist = 0;
+    while (!currPlan.empty()) {
+        double min_dist = INT_MAX;
+        for (auto it: currPlan) {
+            auto route = A_STAR(current, it, mp);
+            double cost = std::get<0>(route);
+            if (cost < min_dist) {
+                min_dist = cost;
+                lastStop = it;
+            }
         }
-        if (pathCost < min_dist) {
-            min_dist = pathCost;
-            bestPlan = currPlan;
-        }
-    } while (std::next_permutation(currPlan.begin(), currPlan.end()));
-    return std::make_tuple(std::move(bestPlan), min_dist);
+        planDist += min_dist;
+        auto it = std::find_if(currPlan.begin(), currPlan.end(),
+                               [lastStop](const Vertex &obj) {
+                                   return obj.getId() == lastStop.getId();
+                               });
+
+        currPlan.erase(it);
+        bestPlan.push_back(lastStop);
+        current = lastStop;
+    }
+//    bestPlan.unique([](const Vertex &a, const Vertex &b) {
+//        return a.getId() == b.getId();
+//    });
+    for (auto it: bestPlan) { std::cout << it.getId() << " "; }
+    return std::make_tuple(std::move(bestPlan), planDist);
 }
 
 Vertex *getNearestStop(const Vertex &current, const map<int, Vertex *> &map) {

@@ -128,7 +128,7 @@ Vertex *Robot::goToNearestPoint() {
     Position cur_pos = this->getPos();
     Vertex cur_vertex(cur_pos.getX(), cur_pos.getY());
     Vertex *min_vertex = getNearestStop(cur_vertex, *this->map);
-    if (getDistance(cur_vertex, *min_vertex) > 0.1) {
+    if (getDistance(cur_vertex, *min_vertex) > NEARSET_POINT_THRESHOLD) {
         this->goTo(*min_vertex);
     }
     return min_vertex;

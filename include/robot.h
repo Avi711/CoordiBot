@@ -40,14 +40,14 @@ class Robot {
 
     void setSpeed(double, double);
 
+    int navigateTo(Vertex);
+
 public:
     Robot();
 
     Position getPos();
 
     double getSonar(int);
-
-    int navigateTo(Vertex);
 
     int navigateTo(int);
 

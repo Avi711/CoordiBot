@@ -43,6 +43,7 @@ void RestServer::handleGetStatus(http_request request) {
 }
 
 void RestServer::handleGetMakeMeeting(http_request request) {
+    // TODO check for busy
     json::value response;
     auto query = request.request_uri().query();
     std::map<std::string, std::string> parameters = getParamsFromGetRequest(web::uri::split_query(query));
@@ -53,9 +54,9 @@ void RestServer::handleGetMakeMeeting(http_request request) {
         return;
     }
 
-    std::vector<int> destinations;
     std::stringstream ss(parameters[INVITED_PARAM]);
     std::string token;
+    std::vector<int> destinations;
     while (std::getline(ss, token, ',')) {
         destinations.push_back(std::stoi(token));
     }
@@ -65,12 +66,14 @@ void RestServer::handleGetMakeMeeting(http_request request) {
     auto mp = this->bob->getMap();
     auto start = *getNearestStop(cur_vertex, *mp);
     auto route = getBestPlan(start, destinations, mp);
+    // TODO add validation of requester
     this->cachedPlan = std::get<0>(route);
     // TODO return time and not meters
     double planCost = std::get<1>(route) + getDistance(cur_vertex, start);
     response[DATA_PARAM] = json::value::object(
             {{ESTIMATED_TIME_PARAM, planCost}});
     request.reply(status_codes::OK, response);
+    std::cout<<"finished get\n";
 }
 
 void RestServer::handleGet(http_request request) {
@@ -84,6 +87,7 @@ void RestServer::handleGet(http_request request) {
     } else {
         handleNotFound(request);
     }
+    return;
 }
 
 
@@ -94,12 +98,13 @@ void RestServer::handlePost(http_request request) {
             std::cout << body["title"].size() << std::endl;
             json::value response;
             request.reply(status_codes::OK, response);
-
             for (auto stop: this->cachedPlan) {
-                this->bob->navigateTo(stop);
+                std::cout<<"going to: "<<stop.getId()<<std::endl;
+                this->bob->navigateTo(stop.getId());
             }
         });
     } else {
         request.reply(status_codes::NotFound);
     }
+    return;
 }

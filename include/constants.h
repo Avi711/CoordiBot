@@ -12,6 +12,8 @@
 #define ANGLE_PRECISION_2 0.07
 #define ANGLE_PRECISION_3 0.04
 
+#define NEARSET_POINT_THRESHOLD 0.1
+
 #define BUSY "busy"
 #define AVAILABLE "available"
 

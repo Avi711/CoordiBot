@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <cmath>
+#include <list>
 #include <map>
 
 class Vertex {
@@ -68,8 +69,7 @@ double getRadiansDistance(double, double);
 
 std::tuple<double, std::vector<Vertex>> A_STAR(Vertex, Vertex, std::map<int, Vertex *> *);
 
-std::tuple<std::vector<Vertex>, double>
-getBestPlan(Vertex, std::vector<int> &, std::map<int, Vertex *> *);
+std::tuple<std::vector<Vertex>, double> getBestPlan(Vertex, std::vector<int> &, std::map<int, Vertex *> *);
 
 Vertex *getNearestStop(const Vertex &, const std::map<int, Vertex *> &);
 
