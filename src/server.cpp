@@ -98,9 +98,10 @@ void RestServer::handlePost(http_request request) {
             std::cout << body["title"].size() << std::endl;
             json::value response;
             request.reply(status_codes::OK, response);
-            for (auto stop: this->cachedPlan) {
-                std::cout<<"going to: "<<stop.getId()<<std::endl;
-                this->bob->navigateTo(stop.getId());
+            std::vector<int> gaga={301};
+            for (auto stop: gaga) {
+                std::cout<<"going to: "<<stop<<std::endl;
+                this->bob->navigateTo(stop);
             }
         });
     } else {
