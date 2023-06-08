@@ -70,6 +70,12 @@ void RestServer::handleGetMakeMeeting(http_request request) {
     auto start = *getNearestStop(cur_vertex, *mp);
     auto route = getBestPlan(start, destinations, mp);
 
+    if (std::get<1>(route) < 0) {
+        response[DATA_PARAM] = json::value::object(
+                {{MSG_PARAM, json::value::string(INVALID_IDS_MSG)}});
+        request.reply(status_codes::BadRequest, response);
+        return;
+    }
     // TODO add validation of requester
     cachedPlan = std::get<0>(route);
     // TODO return time and not meters

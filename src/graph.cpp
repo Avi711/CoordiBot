@@ -111,7 +111,7 @@ std::tuple<double, std::vector<Vertex>> A_STAR(Vertex start, Vertex goal, std::m
         close_list[node->getState()] = true;
         vector<Node *> child_list = node->expand(mp);
         for (Node *child: child_list) {
-            if (close_list[child->getState()] == false && frontier_map[child->getState()] == nullptr) {
+            if (!close_list[child->getState()] && frontier_map[child->getState()] == nullptr) {
                 frontier.push(child);
                 frontier_map[child->getState()] = child;
             } else if (frontier_map[child->getState()] != nullptr &&
@@ -130,7 +130,11 @@ std::tuple<std::vector<Vertex>, double>
 getBestPlan(Vertex current, std::vector<int> &destinations, std::map<int, Vertex *> *mp) {
     std::vector<Vertex> currPlan;
     for (auto id: destinations) {
-        currPlan.push_back(*mp->at(id));
+        try {
+            currPlan.push_back(*mp->at(id));
+        } catch (std::exception& e) {
+            return std::make_tuple(std::vector<Vertex>(), -1);
+        }
     }
     std::vector<Vertex> bestPlan = {current};
     Vertex lastStop = current;

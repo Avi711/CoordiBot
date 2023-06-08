@@ -28,6 +28,7 @@
 
 #define INVITED_ERROR_MSG "Missing invited param"
 #define ROBOT_BUSY_ERROR_MSG "Robot is currently busy"
+#define INVALID_IDS_MSG "One or more id's are invalid"
 #define ARRANGING_MSG "Arranging meeting"
 
 #define MAX_MOVEMENT_SPEED 1;
