@@ -15,6 +15,7 @@ class RestServer {
     http_listener listener_;
     Robot *bob;
     std::vector<Vertex> cachedPlan;
+    std::unordered_map<int, std::vector<Vertex>> cachedPlans;
 
     void handleGet(http_request request);
 
@@ -22,7 +23,7 @@ class RestServer {
 
     void handleGetStatus(http_request request);
 
-    void handleGetMakeMeeting(http_request request);
+    void handlePostArrangeMeeting(http_request request);
 
     void handlePostMakeMeeting(http_request request);
 

@@ -19,14 +19,19 @@
 
 #define STATUS_PATH "/status"
 #define MAKE_MEETING_PATH "/makeMeeting"
+#define ARRANGE_MEETING_PATH "/arrangeMeeting"
 
 #define INVITED_PARAM "invited"
 #define ESTIMATED_TIME_PARAM "estimatedTime"
 #define STATUS_PARAM "status"
 #define MSG_PARAM "msg"
 #define DATA_PARAM "data"
+#define REQUESTER_ID_PARAM "requester_id"
 
 #define INVITED_ERROR_MSG "Missing invited param"
+#define REQUESTER_ID_ERROR_MSG "Missing requester_id param"
+
+#define NONE_MEETING_ERROR_MSG "None meetings were set"
 #define ROBOT_BUSY_ERROR_MSG "Robot is currently busy"
 #define INVALID_IDS_MSG "One or more id's are invalid"
 #define ARRANGING_MSG "Arranging meeting"
