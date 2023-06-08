@@ -3,7 +3,7 @@
 RestServer::RestServer(Robot *bob_) : listener_("http://localhost:8080") {
     listener_.support(methods::GET, std::bind(&RestServer::handleGet, this, std::placeholders::_1));
     listener_.support(methods::POST, std::bind(&RestServer::handlePost, this, std::placeholders::_1));
-    this->bob = bob_;
+    bob = bob_;
 }
 
 void RestServer::start() {
@@ -20,9 +20,6 @@ void handleNotFound(http_request request) {
     request.reply(status_codes::NotFound);
 }
 
-/*
- * URL:
- */
 std::map<std::string, std::string> getParamsFromGetRequest(std::map<std::string, std::string> queryItems) {
     std::map<std::string, std::string> parameters;
     for (const auto &item: queryItems) {
@@ -43,8 +40,14 @@ void RestServer::handleGetStatus(http_request request) {
 }
 
 void RestServer::handleGetMakeMeeting(http_request request) {
-    // TODO check for busy
     json::value response;
+    if (bob->isBusy()) {
+        response[DATA_PARAM] = json::value::object(
+                {{MSG_PARAM, json::value::string(ROBOT_BUSY_ERROR_MSG)}});
+        request.reply(status_codes::Conflict, response);
+        return;
+    }
+
     auto query = request.request_uri().query();
     std::map<std::string, std::string> parameters = getParamsFromGetRequest(web::uri::split_query(query));
     if (parameters.find(INVITED_PARAM) == parameters.end()) {
@@ -61,51 +64,74 @@ void RestServer::handleGetMakeMeeting(http_request request) {
         destinations.push_back(std::stoi(token));
     }
 
-    Position cur_pos = this->bob->getPos();
+    Position cur_pos = bob->getPos();
     Vertex cur_vertex(cur_pos.getX(), cur_pos.getY());
-    auto mp = this->bob->getMap();
+    auto mp = bob->getMap();
     auto start = *getNearestStop(cur_vertex, *mp);
     auto route = getBestPlan(start, destinations, mp);
+
     // TODO add validation of requester
-    this->cachedPlan = std::get<0>(route);
+    cachedPlan = std::get<0>(route);
     // TODO return time and not meters
+
     double planCost = std::get<1>(route) + getDistance(cur_vertex, start);
     response[DATA_PARAM] = json::value::object(
             {{ESTIMATED_TIME_PARAM, planCost}});
     request.reply(status_codes::OK, response);
-    std::cout<<"finished get\n";
+    std::cout << "finished get\n";
 }
 
 void RestServer::handleGet(http_request request) {
-    std::unordered_map<std::string, void (RestServer::*)(
-            http_request)> pathMap = {{STATUS_PATH,       &RestServer::handleGetStatus},
-                                      {MAKE_MEETING_PATH, &RestServer::handleGetMakeMeeting}};
     auto path = request.request_uri().path();
-    auto it = pathMap.find(path);
-    if (it != pathMap.end()) {
-        (this->*(it->second))(request);
+//    std::unordered_map<std::string, void (RestServer::*)(
+//            http_request)> pathMap = {{STATUS_PATH,       &RestServer::handleGetStatus},
+//                                      {MAKE_MEETING_PATH, &RestServer::handleGetMakeMeeting}};
+//    auto it = pathMap.find(path);
+//    if (it != pathMap.end()) {
+//        (this->*(it->second))(request);
+//    } else {
+//        handleNotFound(request);
+//    }
+
+    if (path == STATUS_PATH) {
+        handleGetStatus(request);
+    } else if (path == MAKE_MEETING_PATH) {
+        handleGetMakeMeeting(request);
     } else {
         handleNotFound(request);
     }
     return;
 }
 
+void RestServer::handlePostMakeMeeting(http_request request) {
+    request.extract_json().then([=](json::value body) {
+        json::value response;
+        if (bob->isBusy()) {
+            response[DATA_PARAM] = json::value::object(
+                    {{MSG_PARAM, json::value::string(ROBOT_BUSY_ERROR_MSG)}});
+            request.reply(status_codes::Conflict, response);
+            return;
+        }
+
+        std::cout << body["title"].size() << std::endl;
+
+        response[DATA_PARAM] = json::value::object(
+                {{MSG_PARAM, json::value::string(ARRANGING_MSG)}});
+        request.reply(status_codes::OK, response);
+
+        for (auto stop: cachedPlan) {
+            std::cout << "going to: " << stop.getId() << std::endl;
+            bob->navigateTo(stop.getId());
+        }
+    });
+}
+
 
 void RestServer::handlePost(http_request request) {
-    if (request.request_uri().path() == "/makeMeeting") {
-        request.extract_json().then([=](json::value body) {
-            // Extract meeting details from the request body JSON
-            std::cout << body["title"].size() << std::endl;
-            json::value response;
-            request.reply(status_codes::OK, response);
-            std::vector<int> gaga={301};
-            for (auto stop: gaga) {
-                std::cout<<"going to: "<<stop<<std::endl;
-                this->bob->navigateTo(stop);
-            }
-        });
+    auto path = request.request_uri().path();
+    if (path == MAKE_MEETING_PATH) {
+        handlePostMakeMeeting(request);
     } else {
         request.reply(status_codes::NotFound);
     }
-    return;
 }

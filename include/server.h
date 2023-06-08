@@ -24,6 +24,8 @@ class RestServer {
 
     void handleGetMakeMeeting(http_request request);
 
+    void handlePostMakeMeeting(http_request request);
+
 public:
     RestServer(Robot *bob);
 
