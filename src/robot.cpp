@@ -35,9 +35,8 @@ void Robot::setSpeed(double x, double y) {
     pos2d.SetSpeed(x, y);
 }
 
-double Robot::getSonar(int index) {
-    robot.Read();
-    return sonarProxy[index];
+RangerProxy Robot::getSonar() {
+    return this->sonarProxy;
 }
 
 void Robot::goTo(Vertex v) {
@@ -45,6 +44,8 @@ void Robot::goTo(Vertex v) {
     double vy = v.getY(), vx = v.getX();
     this->rotateToVertex(v);
     cout << "after rotate" << endl;
+    std::cout<<"goto"<<std::endl;
+
     while (true) {
         Position pos = this->getPos();
         double ry = pos.getY(), rx = pos.getX();
@@ -52,7 +53,11 @@ void Robot::goTo(Vertex v) {
             this->setSpeed(0, 0);
             return;
         }
+        robot.Read();
+        this->AvoidObstacles(this->getSpeed().getXSpeed(),this->getSpeed().getYawSpeed(), this->getSonar());
+
         this->setSpeed(1, 0);
+
     }
 }
 
@@ -119,7 +124,10 @@ Position Robot::getPos() {
     robot.Read();
     return {pos2d.GetXPos(), pos2d.GetYPos(), pos2d.GetYaw()};
 }
-
+Speed Robot::getSpeed() {
+    robot.Read();
+    return {pos2d.GetXSpeed(), pos2d.GetYSpeed(), pos2d.GetYawSpeed()};
+}
 std::map<int, Vertex *> *Robot::getMap() {
     return this->map;
 }
@@ -144,4 +152,44 @@ bool Robot::isBusy() {
     return this->isBusy_;
 }
 
+
+void  Robot::AvoidObstacles(double forwardSpeed, double turnSpeed,RangerProxy sp)
+{
+    //will avoid obstacles closer than 40cm
+    double avoidDistance = 0.002;
+    //will turn away at 60 degrees/sec
+    int avoidTurnSpeed = 60;
+//    std::cout<<sp[3]<<std::endl;
+//    std::cout<<sp[2]<<std::endl;
+//    std::cout<<sp[0]<<std::endl;
+//    std::cout<<sp[1]<<std::endl;
+
+    if(sp[1] < avoidDistance)
+    {
+        std::cout<<"left"<<std::endl;
+        this->setSpeed(0,0);
+        //turn right
+        this->setSpeed(0,(-1)*avoidTurnSpeed);
+        return;
+    }
+    else if(sp[2] < avoidDistance)
+    {
+        std::cout<<"right"<<std::endl;
+        this->setSpeed(0,0);
+        //turn left
+        this->setSpeed(0,avoidTurnSpeed);
+
+        return;
+    }
+    else if((sp[0] < avoidDistance) && \
+               (sp[1] < avoidDistance))
+    {
+        std::cout<<"front"<<std::endl;
+        //back off a little bit
+        this->setSpeed(-0.2,avoidTurnSpeed);
+        return;
+    }
+    std::cout<<"d"<<std::endl;
+    return; //do nothing
+}
 
