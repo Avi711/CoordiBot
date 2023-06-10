@@ -71,6 +71,7 @@ int Robot::navigateTo(int id) {
     this->isBusy_ = false;
     return 0;
 }
+
 // return -1 if can't navigate (no target id)
 int Robot::navigateTo(Vertex v) {
     cout << "Navigatig to:::::::::::;" << v.getId() << endl;
@@ -104,14 +105,13 @@ void Robot::rotateToVertex(Vertex v) {
             return;
         }
         rotation_speed = getRotationSpeed(deg_diff) * std::copysign(1.0, deg - pos.getDeg());
-        if (pos.getDeg() > M_PI/2  && deg < -M_PI/2)
+        if (pos.getDeg() > M_PI / 2 && deg < -M_PI / 2)
             rotation_speed = abs(rotation_speed);
-        else if (deg > M_PI/2  && pos.getDeg() < -M_PI/2)
+        else if (deg > M_PI / 2 && pos.getDeg() < -M_PI / 2)
             rotation_speed = abs(rotation_speed) * -1;
 
         this->setSpeed(0, rotation_speed);
         pos = this->getPos();
-        //cout << "rotation speed: " << rotation_speed << "  position: " << pos.getDeg() << " Target: " << deg << endl;
     }
 }
 
@@ -125,18 +125,12 @@ std::map<int, Vertex *> *Robot::getMap() {
 }
 
 Vertex *Robot::goToNearestPoint() {
-    double min_dist = INT_MAX;
-    Vertex *min_vertex;
     Position cur_pos = this->getPos();
     Vertex cur_vertex(cur_pos.getX(), cur_pos.getY());
-    for (auto p: *this->map) {
-        double dist = getDistance(cur_vertex, *p.second);
-        if (dist < min_dist) {
-            min_vertex = p.second;
-            min_dist = dist;
-        }
+    Vertex *min_vertex = getNearestStop(cur_vertex, *this->map);
+    if (getDistance(cur_vertex, *min_vertex) > NEARSET_POINT_THRESHOLD) {
+        this->goTo(*min_vertex);
     }
-    this->goTo(*min_vertex);
     return min_vertex;
 }
 
