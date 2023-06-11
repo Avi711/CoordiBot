@@ -16,16 +16,8 @@ void RestServer::stop() {
     std::cout << "Server stopped\n";
 }
 
-void addCORSHeaders(http_response &response) {
-    response.headers().add("Access-Control-Allow-Origin", "*");
-    response.headers().add("Access-Control-Allow-Methods", "*");
-    response.headers().add("Access-Control-Allow-Headers", "*");
-}
-
 void handleNotFound(http_request request) {
-    http_response httpResponse(status_codes::NotFound);
-    addCORSHeaders(httpResponse);
-    request.reply(httpResponse);
+    request.reply(status_codes::NotFound);
 }
 
 std::map<std::string, std::string> getParamsFromGetRequest(std::map<std::string, std::string> queryItems) {
@@ -50,66 +42,52 @@ void RestServer::handleGetStatus(http_request request) {
 void RestServer::handlePostArrangeMeeting(http_request request) {
     request.extract_json().then([=](json::value body) {
         json::value response;
-        if (bob->isBusy()) {
+        try {
+            if (bob->isBusy()) {
+                response[DATA_PARAM] = json::value::object(
+                        {{MSG_PARAM, json::value::string(ROBOT_BUSY_ERROR_MSG)}});
+                request.reply(status_codes::Conflict, response);
+                return;
+            }
+            if (!body.has_field(INVITED_PARAM)) {
+                response[DATA_PARAM] = json::value::object(
+                        {{MSG_PARAM, json::value::string(INVITED_ERROR_MSG)}});
+                request.reply(status_codes::BadRequest, response);
+                return;
+            }
+            if (!body.has_field(REQUESTER_ID_PARAM)) {
+                response[DATA_PARAM] = json::value::object(
+                        {{MSG_PARAM, json::value::string(REQUESTER_ID_ERROR_MSG)}});
+                request.reply(status_codes::BadRequest, response);
+                return;
+            }
+            std::vector<int> invitedParams;
+            const auto &invitedParamsArray = body[INVITED_PARAM].as_array();
+            for (const auto &element: invitedParamsArray) {
+                invitedParams.push_back(element.as_integer());
+            }
+            Position cur_pos = bob->getPos();
+            Vertex cur_vertex(cur_pos.getX(), cur_pos.getY());
+            auto mp = bob->getMap();
+            auto start = *getNearestStop(cur_vertex, *mp);
+            auto route = getBestPlan(start, invitedParams, mp);
+            if (std::get<1>(route) < 0) {
+                response[DATA_PARAM] = json::value::object(
+                        {{MSG_PARAM, json::value::string(INVALID_IDS_MSG)}});
+                request.reply(status_codes::BadRequest, response);
+                return;
+            }
+            cachedPlans[body[REQUESTER_ID_PARAM].as_integer()] = std::get<0>(route);
+            // TODO return time and not meters
+            double planCost = std::get<1>(route) + getDistance(cur_vertex, start);
             response[DATA_PARAM] = json::value::object(
-                    {{MSG_PARAM, json::value::string(ROBOT_BUSY_ERROR_MSG)}});
-            http_response httpResponse(status_codes::OK);
-            httpResponse.set_body(response);
-            addCORSHeaders(httpResponse);
-            request.reply(httpResponse);
-            return;
-        }
-        if (!body.has_field(INVITED_PARAM)) {
+                    {{ESTIMATED_TIME_PARAM, planCost}});
+            request.reply(status_codes::OK, response);
+        } catch (const std::exception &e) {
             response[DATA_PARAM] = json::value::object(
-                    {{MSG_PARAM, json::value::string(INVITED_ERROR_MSG)}});
-            http_response httpResponse(status_codes::BadRequest);
-            httpResponse.set_body(response);
-            addCORSHeaders(httpResponse);
-            request.reply(httpResponse);
-            return;
+                    {{MSG_PARAM, json::value::string("e.what()")}});
+            request.reply(status_codes::Gone, response);
         }
-        if (!body.has_field(REQUESTER_ID_PARAM)) {
-            response[DATA_PARAM] = json::value::object(
-                    {{MSG_PARAM, json::value::string(REQUESTER_ID_ERROR_MSG)}});
-            http_response httpResponse(status_codes::BadRequest);
-            httpResponse.set_body(response);
-            addCORSHeaders(httpResponse);
-            request.reply(httpResponse);
-            return;
-        }
-        std::vector<int> invitedParams;
-        const auto &invitedParamsArray = body[INVITED_PARAM].as_array();
-        for (const auto &element: invitedParamsArray) {
-            invitedParams.push_back(element.as_integer());
-        }
-
-        Position cur_pos = bob->getPos();
-        Vertex cur_vertex(cur_pos.getX(), cur_pos.getY());
-        auto mp = bob->getMap();
-        auto start = *getNearestStop(cur_vertex, *mp);
-        auto route = getBestPlan(start, invitedParams, mp);
-
-        if (std::get<1>(route) < 0) {
-            response[DATA_PARAM] = json::value::object(
-                    {{MSG_PARAM, json::value::string(INVALID_IDS_MSG)}});
-            http_response httpResponse(status_codes::BadRequest);
-            httpResponse.set_body(response);
-            addCORSHeaders(httpResponse);
-            request.reply(httpResponse);
-            return;
-        }
-
-        cachedPlans[body[REQUESTER_ID_PARAM].as_integer()] = std::get<0>(route);
-
-        // TODO return time and not meters
-        double planCost = std::get<1>(route) + getDistance(cur_vertex, start);
-        response[DATA_PARAM] = json::value::object(
-                {{ESTIMATED_TIME_PARAM, planCost}});
-        http_response httpResponse(status_codes::OK);
-        httpResponse.set_body(response);
-        addCORSHeaders(httpResponse);
-        request.reply(httpResponse);
-        std::cout << "finished get\n";
     });
 }
 
@@ -133,15 +111,13 @@ void RestServer::handleGet(http_request request) {
 }
 
 void RestServer::handlePostMakeMeeting(http_request request) {
+    std::cout << "handlePostMakeMeeting";
     request.extract_json().then([=](json::value body) {
         json::value response;
         if (bob->isBusy()) {
             response[DATA_PARAM] = json::value::object(
                     {{MSG_PARAM, json::value::string(ROBOT_BUSY_ERROR_MSG)}});
-            http_response httpResponse(status_codes::Conflict);
-            httpResponse.set_body(response);
-            addCORSHeaders(httpResponse);
-            request.reply(httpResponse);
+            request.reply(status_codes::Conflict, response);
             return;
         }
 
@@ -151,10 +127,7 @@ void RestServer::handlePostMakeMeeting(http_request request) {
             std::cout << body["title"].size() << std::endl;
             response[DATA_PARAM] = json::value::object(
                     {{MSG_PARAM, json::value::string(ARRANGING_MSG)}});
-            http_response httpResponse(status_codes::OK);
-            httpResponse.set_body(response);
-            addCORSHeaders(httpResponse);
-            request.reply(httpResponse);
+            request.reply(status_codes::OK, response);
             auto plan = it->second;
             for (auto stop: plan) {
                 std::cout << "going to: " << stop.getId() << std::endl;
@@ -163,25 +136,19 @@ void RestServer::handlePostMakeMeeting(http_request request) {
         } else {
             response[DATA_PARAM] = json::value::object(
                     {{MSG_PARAM, json::value::string(NONE_MEETING_ERROR_MSG)}});
-            http_response httpResponse(status_codes::BadRequest);
-            httpResponse.set_body(response);
-            addCORSHeaders(httpResponse);
-            request.reply(httpResponse);
+            request.reply(status_codes::BadRequest, response);
         }
     });
 }
 
 
 void RestServer::handlePost(http_request request) {
-    std::cout<<"HIIIIII";
     auto path = request.request_uri().path();
     if (path == MAKE_MEETING_PATH) {
         handlePostMakeMeeting(request);
     } else if (path == ARRANGE_MEETING_PATH) {
         handlePostArrangeMeeting(request);
     } else {
-        http_response httpResponse(status_codes::NotFound);
-        addCORSHeaders(httpResponse);
-        request.reply(httpResponse);
+        request.reply(status_codes::NotFound);
     }
 }
