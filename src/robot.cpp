@@ -150,4 +150,9 @@ void Robot::readThread() {
     }
 }
 
+void Robot::outputVoiceMessage() {
+    // -- Insert voice message output here --
+    std::this_thread::sleep_for(std::chrono::seconds(30));
+}
+
 
