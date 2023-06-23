@@ -5,6 +5,7 @@
 #include <array>
 #include <map>
 #include <libplayerc++/playerc++.h>
+#include <mutex>
 #include "constants.h"
 #include "graph.h"
 
@@ -31,6 +32,7 @@ class Robot {
     RangerProxy sonarProxy;
     std::map<int, Vertex *> *map;
     bool isBusy_ = false;
+    std::mutex robotMutex_;
 
     void goTo(Vertex);
 
@@ -41,6 +43,8 @@ class Robot {
     void setSpeed(double, double);
 
     int navigateTo(Vertex);
+
+
 
 public:
     Robot();
@@ -54,6 +58,8 @@ public:
     bool isBusy();
 
     std::map<int, Vertex *> *getMap();
+
+    void readThread();
 };
 
 #endif //COORDIBOT_ROBOT_H
