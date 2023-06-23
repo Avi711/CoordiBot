@@ -22,7 +22,6 @@ double getRotationSpeed(double deg_diff) {
 
 
 Robot::Robot() : robot("localhost", 6665), pos2d(&robot, 0), sonarProxy(&robot, 0) {
-
     // enable motors
     pos2d.SetMotorEnable(1);
     // request geometries
@@ -54,12 +53,12 @@ void Robot::goTo(Vertex v) {
             this->setSpeed(0, 0);
             return;
         }
-        this->setSpeed(1, 0);
+        this->setSpeed(MAX_MOVEMENT_SPEED, 0);
     }
 }
 
 int Robot::navigateTo(int id) {
-    if (this->isBusy_) {
+    if (isBusy_) {
         cout << "The robot is busy" << endl;
         return -1;
     }
