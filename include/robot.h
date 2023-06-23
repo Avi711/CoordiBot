@@ -60,6 +60,8 @@ public:
     std::map<int, Vertex *> *getMap();
 
     void readThread();
+
+    void outputVoiceMessage();
 };
 
 #endif //COORDIBOT_ROBOT_H

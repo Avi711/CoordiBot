@@ -40,10 +40,10 @@ void RestServer::handleGetStatus(http_request request) {
 }
 
 double getPlanCost(double distance, int numOfInvitess) {
-    int time = ceil((distance*2.5) / (MAX_MOVEMENT_SPEED/2.5) + numOfInvitess * 30);
+    int time = ceil((distance * 2.5) / (MAX_MOVEMENT_SPEED) + numOfInvitess * 30);
     double sec = time % 60;
     int min = time / 60;
-    return min + sec/100;
+    return min + sec / 100;
 }
 
 void RestServer::handlePostArrangeMeeting(http_request request) {
@@ -121,7 +121,6 @@ void RestServer::handlePostMakeMeeting(http_request request) {
         std::string requester_id = body[REQUESTER_ID_PARAM].as_string();
         auto it = cachedPlans.find(requester_id);
         if (it != cachedPlans.end()) {
-            std::cout << body["title"].size() << std::endl;
             response[DATA_PARAM] = json::value::object(
                     {{MSG_PARAM, json::value::string(ARRANGING_MSG)}});
             request.reply(status_codes::OK, response);
@@ -129,6 +128,9 @@ void RestServer::handlePostMakeMeeting(http_request request) {
             for (auto stop: plan) {
                 std::cout << "going to: " << stop.getId() << std::endl;
                 bob->navigateTo(stop.getId());
+                if (stop.getId() < 1000){
+                        bob->outputVoiceMessage();
+                }
             }
         } else {
             response[DATA_PARAM] = json::value::object(
