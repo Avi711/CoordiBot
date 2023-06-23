@@ -36,7 +36,7 @@
 #define INVALID_IDS_MSG "One or more id's are invalid"
 #define ARRANGING_MSG "Arranging meeting"
 
-#define MAX_MOVEMENT_SPEED 1;
+#define MAX_MOVEMENT_SPEED 1
 
 
 #endif //COORDIBOT_CONSTANTS_H

@@ -1,6 +1,6 @@
 #include "../include/server.h"
 
-RestServer::RestServer(Robot *bob_) : listener_("http://127.0.0.1:8080") {
+RestServer::RestServer(Robot *bob_) : listener_("http://192.168.56.101:8080") {
     listener_.support(methods::GET, std::bind(&RestServer::handleGet, this, std::placeholders::_1));
     listener_.support(methods::POST, std::bind(&RestServer::handlePost, this, std::placeholders::_1));
     bob = bob_;
@@ -37,6 +37,13 @@ void RestServer::handleGetStatus(http_request request) {
     response[DATA_PARAM] = json::value::object(
             {{STATUS_PARAM, json::value::string(bob->isBusy() ? BUSY : AVAILABLE)}});
     request.reply(status_codes::OK, response);
+}
+
+double getPlanCost(double distance, int numOfInvitess) {
+    int time = ceil((distance*2.5) / (MAX_MOVEMENT_SPEED/2.5) + numOfInvitess * 30);
+    double sec = time % 60;
+    int min = time / 60;
+    return min + sec/100;
 }
 
 void RestServer::handlePostArrangeMeeting(http_request request) {
@@ -78,8 +85,8 @@ void RestServer::handlePostArrangeMeeting(http_request request) {
                 return;
             }
             cachedPlans[body[REQUESTER_ID_PARAM].as_integer()] = std::get<0>(route);
-            // TODO return time and not meters
-            double planCost = std::get<1>(route) + getDistance(cur_vertex, start);
+            double planDistance = std::get<1>(route) + getDistance(cur_vertex, start);
+            double planCost = getPlanCost(planDistance, invitedParamsArray.size());
             response[DATA_PARAM] = json::value::object(
                     {{ESTIMATED_TIME_PARAM, planCost}});
             request.reply(status_codes::OK, response);
