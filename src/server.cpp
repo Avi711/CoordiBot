@@ -84,7 +84,7 @@ void RestServer::handlePostArrangeMeeting(http_request request) {
                 request.reply(status_codes::BadRequest, response);
                 return;
             }
-            cachedPlans[body[REQUESTER_ID_PARAM].as_integer()] = std::get<0>(route);
+            cachedPlans[body[REQUESTER_ID_PARAM].as_string()] = std::get<0>(route);
             double planDistance = std::get<1>(route) + getDistance(cur_vertex, start);
             double planCost = getPlanCost(planDistance, invitedParamsArray.size());
             response[DATA_PARAM] = json::value::object(
@@ -100,21 +100,11 @@ void RestServer::handlePostArrangeMeeting(http_request request) {
 
 void RestServer::handleGet(http_request request) {
     auto path = request.request_uri().path();
-//    std::unordered_map<std::string, void (RestServer::*)(
-//            http_request)> pathMap = {{STATUS_PATH,       &RestServer::handleGetStatus},
-//                                      {MAKE_MEETING_PATH, &RestServer::handleGetMakeMeeting}};
-//    auto it = pathMap.find(path);
-//    if (it != pathMap.end()) {
-//        (this->*(it->second))(request);
-//    } else {
-//        handleNotFound(request);
-//    }
     if (path == STATUS_PATH) {
         handleGetStatus(request);
     } else {
         handleNotFound(request);
     }
-    return;
 }
 
 void RestServer::handlePostMakeMeeting(http_request request) {
@@ -128,7 +118,7 @@ void RestServer::handlePostMakeMeeting(http_request request) {
             return;
         }
 
-        int requester_id = body[REQUESTER_ID_PARAM].as_integer();
+        std::string requester_id = body[REQUESTER_ID_PARAM].as_string();
         auto it = cachedPlans.find(requester_id);
         if (it != cachedPlans.end()) {
             std::cout << body["title"].size() << std::endl;
