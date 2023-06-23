@@ -22,7 +22,7 @@ double getRotationSpeed(double deg_diff) {
 
 
 Robot::Robot() : robot("localhost", 6665), pos2d(&robot, 0), sonarProxy(&robot, 0) {
-    robot.Read();
+
     // enable motors
     pos2d.SetMotorEnable(1);
     // request geometries
@@ -36,7 +36,9 @@ void Robot::setSpeed(double x, double y) {
 }
 
 double Robot::getSonar(int index) {
+    this->robotMutex_.lock();
     robot.Read();
+    this->robotMutex_.unlock();
     return sonarProxy[index];
 }
 
@@ -116,7 +118,9 @@ void Robot::rotateToVertex(Vertex v) {
 }
 
 Position Robot::getPos() {
+    this->robotMutex_.lock();
     robot.Read();
+    this->robotMutex_.unlock();
     return {pos2d.GetXPos(), pos2d.GetYPos(), pos2d.GetYaw()};
 }
 
@@ -136,6 +140,15 @@ Vertex *Robot::goToNearestPoint() {
 
 bool Robot::isBusy() {
     return this->isBusy_;
+}
+
+void Robot::readThread() {
+    while (true) {
+        this->robotMutex_.lock();
+        robot.Read();
+        this->robotMutex_.unlock();
+        std::this_thread::sleep_for(std::chrono::seconds(10));
+    }
 }
 
 
