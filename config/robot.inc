@@ -3,9 +3,9 @@ define bigbobs_sonar sensor
     #define the size of each transducer [xsize ysize zsize] in meters
     size [0.01 0.05 0.01]
     #define the range bounds [min max]
-    range [0.3 2.0]
+    range [0 2.0]
     #define the angular field of view (by default in degrees)
-    fov 50
+    fov 30
     #define the color that ranges are drawn in the gui
     color_rgba [ 0 1 0 0.5]
 )

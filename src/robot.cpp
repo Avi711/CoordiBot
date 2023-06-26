@@ -43,25 +43,25 @@ double Robot::getSonar(int index) {
 }
 
 void Robot::goTo(Vertex v) {
-    cout << "Going to:::::::::::;" << v.getId() << endl;
-    double vy = v.getY(), vx = v.getX();
-    this->rotateToVertex(v);
-    cout << "after rotate" << endl;
-    std::cout<<"goto"<<std::endl;
+    while(true) {
+        cout << "Going to:::::::::::;" << v.getId() << endl;
+        double vy = v.getY(), vx = v.getX();
+        this->rotateToVertex(v);
+        cout << "after rotate" << endl;
+        std::cout << "goto" << std::endl;
 
-    while (true) {
-        Position pos = this->getPos();
-        double ry = pos.getY(), rx = pos.getX();
-        if (std::abs(vx - rx) < 0.21 and std::abs(vy - ry) < 0.21) {
-            this->setSpeed(0, 0);
-            return;
+        while (true) {
+            Position pos = this->getPos();
+            double ry = pos.getY(), rx = pos.getX();
+            if (std::abs(vx - rx) < 0.21 and std::abs(vy - ry) < 0.21) {
+                this->setSpeed(0, 0);
+                return;
+            }
+            this->setSpeed(MAX_MOVEMENT_SPEED, 0);
+            // check for existence obstacle
+            if ((this->getSonar(0) <= AVOID_DISTANCE) || (this->getSonar(1) <= AVOID_DISTANCE) ||
+                (this->getSonar(2) <= AVOID_DISTANCE)) { return this->AvoidObstacles(v); break; }
         }
-        this->setSpeed(MAX_MOVEMENT_SPEED, 0);
-        robot.Read();
-        this->AvoidObstacles(this->getSpeed().getXSpeed(),this->getSpeed().getYawSpeed(), this->getSonar());
-
-        this->setSpeed(MAX_MOVEMENT_SPEED, 0);
-
     }
 }
 
@@ -166,43 +166,36 @@ void Robot::outputVoiceMessage() {
 }
 
 
-void  Robot::AvoidObstacles(double forwardSpeed, double turnSpeed,RangerProxy sp)
+void  Robot::AvoidObstacles(Vertex v)
 {
-    //will avoid obstacles closer than 40cm
-    double avoidDistance = 0.002;
     //will turn away at 60 degrees/sec
-    int avoidTurnSpeed = 60;
-//    std::cout<<sp[3]<<std::endl;
-//    std::cout<<sp[2]<<std::endl;
-//    std::cout<<sp[0]<<std::endl;
-//    std::cout<<sp[1]<<std::endl;
+    int avoidTurnSpeed = 10;
+    std::cout<<"front"<<getSonar(0)<<std::endl;
+    std::cout<<"left"<<getSonar(1)<<std::endl;
+    std::cout<<"right"<<getSonar(2)<<std::endl;
+    for (int i=0 ; i<=4;i++) {
+        if (this->getSonar(1) < AVOID_DISTANCE) {
+            std::cout << "left" << std::endl;
+            //turn right
+            this->setSpeed(-0.2, (-1) * avoidTurnSpeed);
 
-    if(sp[1] < avoidDistance)
-    {
-        std::cout<<"left"<<std::endl;
-        this->setSpeed(0,0);
-        //turn right
-        this->setSpeed(0,(-1)*avoidTurnSpeed);
-        return;
-    }
-    else if(sp[2] < avoidDistance)
-    {
-        std::cout<<"right"<<std::endl;
-        this->setSpeed(0,0);
-        //turn left
-        this->setSpeed(0,avoidTurnSpeed);
+        } else if (this->getSonar(2) < AVOID_DISTANCE) {
+            std::cout << "right" << std::endl;
+            //turn left
+            this->setSpeed(-0.2, avoidTurnSpeed);
 
-        return;
+        } else if (this->getSonar(0) < AVOID_DISTANCE) {
+            std::cout << "front" << std::endl;
+            //back off a little bit
+            this->setSpeed(-0.2, avoidTurnSpeed);
+        }
+        else{this->setSpeed(0.6,0);}
+        sleep(1);
+
+
     }
-    else if((sp[0] < avoidDistance) && \
-               (sp[1] < avoidDistance))
-    {
-        std::cout<<"front"<<std::endl;
-        //back off a little bit
-        this->setSpeed(-0.2,avoidTurnSpeed);
-        return;
-    }
+    this->navigateTo(v);
     std::cout<<"d"<<std::endl;
-    return; //do nothing
+//    return this->goTo(v);
 }
 

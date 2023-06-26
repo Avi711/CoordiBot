@@ -24,14 +24,18 @@ public:
 
     double getDeg() const { return deg; }
 };
+
 class Speed {
     double xSpeed;
     double ySpeed;
     double yawSpeed;
 public:
-    Speed(double xSpeed, double ySpeed,double yawSpeed) : xSpeed(xSpeed), ySpeed(ySpeed), yawSpeed(yawSpeed) {};
+    Speed(double xSpeed, double ySpeed, double yawSpeed) : xSpeed(xSpeed), ySpeed(ySpeed), yawSpeed(yawSpeed) {};
+
     double getXSpeed() const { return xSpeed; }
+
     double getYSpeed() const { return ySpeed; }
+
     double getYawSpeed() const { return yawSpeed; }
 };
 
@@ -54,9 +58,9 @@ class Robot {
     int navigateTo(Vertex);
 
 
-
 public:
     Robot();
+
     Speed getSpeed();
 
     Position getPos();
@@ -65,8 +69,7 @@ public:
 
     int navigateTo(int);
 
-    RangerProxy getSonar();
-    int navigateTo(int id);
+
     bool isBusy();
 
     std::map<int, Vertex *> *getMap();
@@ -74,8 +77,8 @@ public:
     void readThread();
 
     void outputVoiceMessage();
-    void AvoidObstacles(double forwardSpeed, double turnSpeed,RangerProxy sp);
-    std::map<int, Vertex*>* getMap();
+
+    void AvoidObstacles(Vertex v);
 };
 
 #endif //COORDIBOT_ROBOT_H

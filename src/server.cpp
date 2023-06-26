@@ -1,6 +1,6 @@
 #include "../include/server.h"
 
-RestServer::RestServer(Robot *bob_) : listener_("http://192.168.56.101:8080") {
+RestServer::RestServer(Robot *bob_) : listener_("http://127.0.0.1:8080") {
     listener_.support(methods::GET, std::bind(&RestServer::handleGet, this, std::placeholders::_1));
     listener_.support(methods::POST, std::bind(&RestServer::handlePost, this, std::placeholders::_1));
     bob = bob_;
@@ -40,10 +40,7 @@ void RestServer::handleGetStatus(http_request request) {
 }
 
 double getPlanCost(double distance, int numOfInvitess) {
-    int time = ceil((distance * 2.5) / (MAX_MOVEMENT_SPEED) + numOfInvitess * 30);
-    double sec = time % 60;
-    int min = time / 60;
-    return min + sec / 100;
+    return (ceil(distance/ (MAX_MOVEMENT_SPEED) + numOfInvitess * 30))/60;
 }
 
 void RestServer::handlePostArrangeMeeting(http_request request) {
