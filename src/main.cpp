@@ -8,7 +8,7 @@ int main() {
     auto *bob = new Robot;
     std::thread t(&Robot::readThread, bob);
     t.detach();
-    bob->navigateTo(310);
+    bob->navigateTo(309);
 //    RestServer server(bob);
 //    server.start();
 //    std::cout << "Press Enter to exit.\n";

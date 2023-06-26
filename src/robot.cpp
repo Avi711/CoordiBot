@@ -4,6 +4,7 @@
 #include <chrono>
 #include <thread>
 #include <map>
+#define AVOID_DISTANCE 0.1
 
 
 using namespace std;
