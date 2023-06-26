@@ -1,77 +1,17 @@
-#include "../include/robot.h"
-#include "../include/graph.h"
-#include "../include/utils.h"
 #include <iostream>
-#include <queue>
-#include "map"
-#include "../include/graph.h"
+#include "../include/robot.h"
 #include "../include/server.h"
-//#include <json/json.h>
-
-//#include <cpprest/json.h>
 
 using namespace std;
 
-
-
-int main(int argc, char *argv[]) {
-    Robot* bob = new Robot;
+int main() {
+    auto *bob = new Robot;
+    std::thread t(&Robot::readThread, bob);
+    t.detach();
     RestServer server(bob);
     server.start();
-
-    // Keep the server running until interrupted
-
-
-    std::map<int, Vertex*>* mp = generateMap();
-    Vertex start(1,-8.7,-9.65);
-    Vertex goal(32700,-12.48,15.99);
-    std::vector<Vertex> path = A_STAR(start, goal,mp);
-    for (Vertex v : path) {
-        cout << v.getId() << endl;
-    }
-    Vertex v(1,2,3);
-    //bob->navigateTo(21); // currently this will move to a mock location
-
-
-
     std::cout << "Press Enter to exit.\n";
     std::cin.ignore();
     server.stop();
     return 0;
-
 }
-
-
-
-
-
-
-
-
-
-
-//Vertex target(1,1,2);
-//auto compareNodes = [target](const Node* lhs, const Node* rhs) {
-//    return lhs->getPathCost() + getDistance(lhs->getVertex(), target) > rhs->getPathCost() + getDistance(rhs->getVertex(), target); // Smallest path first
-//};
-//std::priority_queue<Node*, std::vector<Node*>, decltype(compareNodes)> nodeQueue(compareNodes);
-//Vertex v1(1,1,2);
-//Node* n1 = new Node(v1);
-//Vertex v2(2,1,2);
-//Node* n2 = new Node(v2,n1);
-//Vertex v3(3,1,2);
-//Node* n3 = new Node(v3,n2);
-//
-//vector<Vertex> vec = n3->getPath();
-//
-//for (Vertex v : vec) {
-//cout << "id: " << v.getId() << endl;
-//}
-//n1->setPathCost(5);
-//n2->setPathCost(4);
-//n3->setPathCost(3);
-//nodeQueue.push(n3);
-//nodeQueue.push(n1);
-//nodeQueue.push(n2);
-//cout << nodeQueue.top()->getPathCost() << endl;
-//return 0;

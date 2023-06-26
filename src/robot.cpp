@@ -35,8 +35,11 @@ void Robot::setSpeed(double x, double y) {
     pos2d.SetSpeed(x, y);
 }
 
-RangerProxy Robot::getSonar() {
-    return this->sonarProxy;
+double Robot::getSonar(int index) {
+    this->robotMutex_.lock();
+    robot.Read();
+    this->robotMutex_.unlock();
+    return sonarProxy[index];
 }
 
 void Robot::goTo(Vertex v) {
@@ -53,16 +56,17 @@ void Robot::goTo(Vertex v) {
             this->setSpeed(0, 0);
             return;
         }
+        this->setSpeed(MAX_MOVEMENT_SPEED, 0);
         robot.Read();
         this->AvoidObstacles(this->getSpeed().getXSpeed(),this->getSpeed().getYawSpeed(), this->getSonar());
 
-        this->setSpeed(1, 0);
+        this->setSpeed(MAX_MOVEMENT_SPEED, 0);
 
     }
 }
 
 int Robot::navigateTo(int id) {
-    if (this->isBusy_) {
+    if (isBusy_) {
         cout << "The robot is busy" << endl;
         return -1;
     }
@@ -109,19 +113,20 @@ void Robot::rotateToVertex(Vertex v) {
             return;
         }
         rotation_speed = getRotationSpeed(deg_diff) * std::copysign(1.0, deg - pos.getDeg());
-        if (pos.getDeg() > M_PI/2  && deg < -M_PI/2)
+        if (pos.getDeg() > M_PI / 2 && deg < -M_PI / 2)
             rotation_speed = abs(rotation_speed);
-        else if (deg > M_PI/2  && pos.getDeg() < -M_PI/2)
+        else if (deg > M_PI / 2 && pos.getDeg() < -M_PI / 2)
             rotation_speed = abs(rotation_speed) * -1;
 
         this->setSpeed(0, rotation_speed);
         pos = this->getPos();
-        //cout << "rotation speed: " << rotation_speed << "  position: " << pos.getDeg() << " Target: " << deg << endl;
     }
 }
 
 Position Robot::getPos() {
+    this->robotMutex_.lock();
     robot.Read();
+    this->robotMutex_.unlock();
     return {pos2d.GetXPos(), pos2d.GetYPos(), pos2d.GetYaw()};
 }
 Speed Robot::getSpeed() {
@@ -133,23 +138,31 @@ std::map<int, Vertex *> *Robot::getMap() {
 }
 
 Vertex *Robot::goToNearestPoint() {
-    double min_dist = INT_MAX;
-    Vertex *min_vertex;
     Position cur_pos = this->getPos();
     Vertex cur_vertex(cur_pos.getX(), cur_pos.getY());
-    for (auto p: *this->map) {
-        double dist = getDistance(cur_vertex, *p.second);
-        if (dist < min_dist) {
-            min_vertex = p.second;
-            min_dist = dist;
-        }
+    Vertex *min_vertex = getNearestStop(cur_vertex, *this->map);
+    if (getDistance(cur_vertex, *min_vertex) > NEARSET_POINT_THRESHOLD) {
+        this->goTo(*min_vertex);
     }
-    this->goTo(*min_vertex);
     return min_vertex;
 }
 
 bool Robot::isBusy() {
     return this->isBusy_;
+}
+
+void Robot::readThread() {
+    while (true) {
+        this->robotMutex_.lock();
+        robot.Read();
+        this->robotMutex_.unlock();
+        std::this_thread::sleep_for(std::chrono::seconds(10));
+    }
+}
+
+void Robot::outputVoiceMessage() {
+    // -- Insert voice message output here --
+    std::this_thread::sleep_for(std::chrono::seconds(30));
 }
 
 

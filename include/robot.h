@@ -2,11 +2,13 @@
 #ifndef COORDIBOT_ROBOT_H
 #define COORDIBOT_ROBOT_H
 
-#include <libplayerc++/playerc++.h>
-#include "graph.h"
 #include <array>
-#include "constants.h"
 #include <map>
+#include <libplayerc++/playerc++.h>
+#include <mutex>
+#include "constants.h"
+#include "graph.h"
+
 using namespace PlayerCc;
 
 class Position {
@@ -14,9 +16,12 @@ class Position {
     double y;
     double deg;
 public:
-    Position(double x, double y,double deg) : x(x), y(y), deg(deg) {};
+    Position(double x, double y, double deg) : x(x), y(y), deg(deg) {};
+
     double getX() const { return x; }
+
     double getY() const { return y; }
+
     double getDeg() const { return deg; }
 };
 class Speed {
@@ -34,21 +39,41 @@ class Robot {
     PlayerClient robot;
     Position2dProxy pos2d;
     RangerProxy sonarProxy;
-    std::map<int, Vertex*>* map;
+    std::map<int, Vertex *> *map;
     bool isBusy_ = false;
-    void goTo(Vertex v);
-    int navigateTo(Vertex v);
-    Vertex* goToNearestPoint();
-    void rotateToVertex(Vertex v);
-    void setSpeed(double x, double y);
+    std::mutex robotMutex_;
+
+    void goTo(Vertex);
+
+    Vertex *goToNearestPoint();
+
+    void rotateToVertex(Vertex);
+
+    void setSpeed(double, double);
+
+    int navigateTo(Vertex);
+
+
 
 public:
     Robot();
     Speed getSpeed();
+
     Position getPos();
+
+    double getSonar(int);
+
+    int navigateTo(int);
+
     RangerProxy getSonar();
     int navigateTo(int id);
     bool isBusy();
+
+    std::map<int, Vertex *> *getMap();
+
+    void readThread();
+
+    void outputVoiceMessage();
     void AvoidObstacles(double forwardSpeed, double turnSpeed,RangerProxy sp);
     std::map<int, Vertex*>* getMap();
 };
