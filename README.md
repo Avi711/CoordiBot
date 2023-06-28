@@ -24,6 +24,4 @@ By default, the server will run on localhost:6665
 You will be able to interact with the robot using the CoordiBot-App: 
 
 
-
-
-
+![image](https://github.com/Avi711/CoordiBot/assets/92336875/b07d04a6-2c67-4c56-aead-0056618f80d8)
