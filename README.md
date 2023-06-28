@@ -7,12 +7,13 @@ Make sure I have player/stage installed correctly on your machine.
 
 In the project directory, you should:
 
-Open new terminal in the main directory:
+#### `Open new terminal in the main project directory:`
+
 ### `1. cd config`
 
 ### `2. player main.cfg`
 
-With new terminal in the main directory:
+#### `with new terminal in the main project directory:`
 
 ### `3. make`
 
