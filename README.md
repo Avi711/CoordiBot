@@ -15,7 +15,7 @@ In the project directory, you should:
 
 By default, the server will run on localhost:6665
 
-## `You will be able to interact with the robot using the CoordiBot-App : `
+#### `You will be able to interact with the robot using the CoordiBot-App : `
 
 
 
