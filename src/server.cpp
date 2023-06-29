@@ -39,8 +39,18 @@ void RestServer::handleGetStatus(http_request request) {
     request.reply(status_codes::OK, response);
 }
 
-double getPlanCost(double distance, int numOfInvitess) {
-    return (ceil(distance / (MAX_MOVEMENT_SPEED) + numOfInvitess * 30)) / 60;
+double getPlanCost(double distance, int numOfInvitess, std::vector<Vertex> route) {
+    double travel_distance = (ceil(distance / (MAX_MOVEMENT_SPEED) + numOfInvitess * 30));
+    double turning_cost = 0;
+    auto prev = route.begin();
+    auto current = prev + 1;
+    while (current != route.end()) {
+        double deg = abs(getDegree({current->getX(), current->getY()}, {prev->getX(), prev->getY()}));
+        turning_cost += deg / ROTATION_SPEED_1 + 0.4;
+        prev += 1;
+        current += 1;
+    }
+    return travel_distance + turning_cost;
 }
 
 void RestServer::handlePostArrangeMeeting(http_request request) {
@@ -83,7 +93,7 @@ void RestServer::handlePostArrangeMeeting(http_request request) {
             }
             cachedPlans[body[REQUESTER_ID_PARAM].as_string()] = std::get<0>(route);
             double planDistance = std::get<1>(route) + getDistance(cur_vertex, start);
-            double planCost = getPlanCost(planDistance, invitedParamsArray.size());
+            double planCost = getPlanCost(planDistance, invitedParamsArray.size(), std::get<0>(route));
             response[DATA_PARAM] = json::value::object(
                     {{ESTIMATED_TIME_PARAM, planCost}});
             request.reply(status_codes::OK, response);
