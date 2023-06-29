@@ -3,7 +3,9 @@
 ## Instructions:
 
 
-Make sure I have player/stage installed correctly on your machine.
+Make sure you have player/stage and cppresk-sdk installed correctly on your machine.
+
+For cpprest in ubuntu: sudo apt-get install libcpprest-dev
 
 In the project directory, you should:
 
