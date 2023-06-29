@@ -14,7 +14,6 @@ using namespace web::http::experimental::listener;
 class RestServer {
     http_listener listener_;
     Robot *bob;
-    std::vector<Vertex> cachedPlan;
     std::unordered_map<std::string, std::vector<Vertex>> cachedPlans;
 
     void handleGet(http_request request);
