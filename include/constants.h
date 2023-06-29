@@ -27,6 +27,7 @@
 
 #define BUSY "busy"
 #define AVAILABLE "available"
+#define PROGRESS_PATH "/progress"
 #define STATUS_PATH "/status"
 #define MAKE_MEETING_PATH "/makeMeeting"
 #define ARRANGE_MEETING_PATH "/arrangeMeeting"
@@ -34,6 +35,7 @@
 #define INVITED_PARAM "invited"
 #define ESTIMATED_TIME_PARAM "estimatedTime"
 #define STATUS_PARAM "status"
+#define PROGRESS_PARAM "progress"
 #define MSG_PARAM "msg"
 #define DATA_PARAM "data"
 #define REQUESTER_ID_PARAM "requester_id"

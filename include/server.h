@@ -15,12 +15,15 @@ class RestServer {
     http_listener listener_;
     Robot *bob;
     std::unordered_map<std::string, std::vector<Vertex>> cachedPlans;
+    std::tuple<double, double> progress = {0, 1};
 
     void handleGet(http_request request);
 
     void handlePost(http_request request);
 
     void handleGetStatus(http_request request);
+
+    void handleGetProgress(http_request request);
 
     void handlePostArrangeMeeting(http_request request);
 

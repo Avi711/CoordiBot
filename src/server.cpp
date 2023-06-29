@@ -40,7 +40,7 @@ void RestServer::handleGetStatus(http_request request) {
 }
 
 double getPlanCost(double distance, int numOfInvitess) {
-    return (ceil(distance/ (MAX_MOVEMENT_SPEED) + numOfInvitess * 30))/60;
+    return (ceil(distance / (MAX_MOVEMENT_SPEED) + numOfInvitess * 30)) / 60;
 }
 
 void RestServer::handlePostArrangeMeeting(http_request request) {
@@ -99,6 +99,8 @@ void RestServer::handleGet(http_request request) {
     auto path = request.request_uri().path();
     if (path == STATUS_PATH) {
         handleGetStatus(request);
+    } else if (path == PROGRESS_PATH) {
+        handleGetProgress(request);
     } else {
         handleNotFound(request);
     }
@@ -122,11 +124,19 @@ void RestServer::handlePostMakeMeeting(http_request request) {
                     {{MSG_PARAM, json::value::string(ARRANGING_MSG)}});
             request.reply(status_codes::OK, response);
             auto plan = it->second;
+            int planSize = plan.size();
+            progress = {0, planSize};
             for (auto stop: plan) {
                 std::cout << "going to: " << stop.getId() << std::endl;
-                bob->navigateTo(stop.getId());
-                if (stop.getId() < 1000){
-                        bob->outputVoiceMessage();
+                int currentProgress = std::get<0>(progress);
+                int res = bob->navigateTo(stop.getId());
+                if (res < 0) {
+                    progress = {-1, planSize};
+                    return;
+                }
+                progress = {currentProgress + 1, planSize};
+                if (stop.getId() < 1000) {
+                    bob->outputVoiceMessage();
                 }
             }
         } else {
@@ -147,4 +157,11 @@ void RestServer::handlePost(http_request request) {
     } else {
         request.reply(status_codes::NotFound);
     }
+}
+
+void RestServer::handleGetProgress(http_request request) {
+    json::value response;
+    response[DATA_PARAM] = json::value::object(
+            {{PROGRESS_PARAM, std::get<0>(progress) / std::get<1>(progress)}});
+    request.reply(status_codes::OK, response);
 }
