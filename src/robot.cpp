@@ -4,9 +4,10 @@
 #include <chrono>
 #include <thread>
 #include <map>
-
+#include <float.h>
 #define AVOID_DISTANCE 0.35
 #define AVOID_DISTANCE_SIDE 0.35
+
 
 using namespace std;
 
@@ -44,28 +45,31 @@ double Robot::getSonar(int index) {
     return sonarProxy[index];
 }
 
-int Robot::goTo(Vertex v) {
-    while (true) {
-        cout << "Going to:::::::::::;" << v.getId() << endl;
-        double vy = v.getY(), vx = v.getX();
-        this->rotateToVertex(v);
-        cout << "after rotate" << endl;
-        std::cout << "goto" << std::endl;
 
-        while (true) {
-            Position pos = this->getPos();
-            double ry = pos.getY(), rx = pos.getX();
-            if (std::abs(vx - rx) < 0.21 and std::abs(vy - ry) < 0.21) {
-                this->setSpeed(0, 0);
-                return 0;
-            }
-            this->setSpeed(MAX_MOVEMENT_SPEED, 0);
-            // check for existence obstacle
-            if (this->isObstacle()) {
+int Robot::goTo(Vertex v) {
+    cout << "Going to:::::::::::;" << v.getId() << endl;
+    double vy = v.getY(), vx = v.getX();
+    this->rotateToVertex(v);
+    cout << "after rotate" << endl;
+    double prev = DBL_MAX;
+    double distance = 0;
+    while (true) {
+        Position pos = this->getPos();
+        double ry = pos.getY(), rx = pos.getX();
+        distance = calculateEuclideanDistance(rx,ry,vx,vy);
+        cout << "ddddddxxxxxxxx: " << std::abs(vx - rx) << "  ddddddyyyyyyy:  " << std::abs(vy - ry) << endl;
+        if (distance > prev || (std::abs(vx - rx) < 0.15 && std::abs(vy - ry) < 0.15)) {
+            cout << "dx: " << std::abs(vx - rx) << "  dy:  " << std::abs(vy - ry) << endl;
+            this->setSpeed(0, 0);
+            return;
+        }
+        
+        this->setSpeed(MAX_MOVEMENT_SPEED, 0);
+        if (this->isObstacle()) {
                 this->AvoidObstacles(v);
                 return -1;
-            }
         }
+        prev = distance;
     }
 }
 
@@ -101,10 +105,11 @@ int Robot::navigateTo(Vertex v) {
         if (cur != nullptr) {
             std::vector<Vertex> route = getRoute(*cur, v, this->map); // currently uses mock start and goal points
             for (auto it = route.begin() + 1; it != route.end(); ++it) {
+                auto check = (it + 1);
                 Position pos = this->getPos();
-                double deg = getDegree({pos.getX(), pos.getY()}, {v.getX(), v.getY()});
+                double deg = getDegree({pos.getX(), pos.getY()}, {check->getX(), check->getY()});
                 double deg_diff = getRadiansDistance(this->getPos().getDeg(), deg);
-                if (deg_diff < 0.007 && (it + 1) != route.end())
+                if (deg_diff < 0.005)
                     continue;
                 if (this->goTo(*it) == -1) {
                     problem = 1;
@@ -132,9 +137,10 @@ void Robot::rotateToVertex(Vertex v) {
             return;
         }
         rotation_speed = getRotationSpeed(deg_diff) * std::copysign(1.0, deg - pos.getDeg());
-        if (pos.getDeg() > M_PI / 2 && deg < -M_PI / 2)
+        double epsilon = 0.05;
+        if (pos.getDeg() > M_PI / 2 - epsilon && deg < -M_PI / 2 + epsilon)
             rotation_speed = abs(rotation_speed);
-        else if (deg > M_PI / 2 && pos.getDeg() < -M_PI / 2)
+        else if (deg > M_PI / 2 - epsilon && pos.getDeg() < -M_PI / 2 + epsilon)
             rotation_speed = abs(rotation_speed) * -1;
 
         this->setSpeed(0, rotation_speed);
