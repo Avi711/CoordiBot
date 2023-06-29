@@ -1,6 +1,15 @@
 #ifndef COORDIBOT_CONSTANTS_H
 #define COORDIBOT_CONSTANTS_H
 
+
+// Server
+
+#define SERVER_PORT 6665
+#define SERVER_IP "localhost"
+
+
+// Rotation
+
 #define DEG_90 1.57079633;
 #define MAX_ROTATION_SPEED 0.62;
 #define ROTATION_SPEED_1 0.62;
@@ -12,11 +21,12 @@
 #define ANGLE_PRECISION_2 0.07
 #define ANGLE_PRECISION_3 0.04
 
+// Distances
+
 #define NEARSET_POINT_THRESHOLD 0.1
 
 #define BUSY "busy"
 #define AVAILABLE "available"
-
 #define STATUS_PATH "/status"
 #define MAKE_MEETING_PATH "/makeMeeting"
 #define ARRANGE_MEETING_PATH "/arrangeMeeting"
