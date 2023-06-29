@@ -23,7 +23,7 @@ double getRotationSpeed(double deg_diff) {
 }
 
 
-Robot::Robot() : robot(SERVER_IP, SERVER_PORT), pos2d(&robot, 0), sonarProxy(&robot, 0) {
+Robot::Robot() : robot(PLAYER_IP, PLAYER_PORT), pos2d(&robot, 0), sonarProxy(&robot, 0) {
     robot.Read();
     // enable motors
     pos2d.SetMotorEnable(1);

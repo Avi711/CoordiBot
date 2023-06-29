@@ -4,8 +4,9 @@
 
 // Server
 
-#define SERVER_PORT 6665
-#define SERVER_IP "localhost"
+#define PLAYER_PORT 6665
+#define PLAYER_IP "localhost"
+#define SERVER_IP "http://192.168.56.101:8080"
 
 
 // Rotation
