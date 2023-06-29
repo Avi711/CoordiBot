@@ -25,6 +25,19 @@ public:
     double getDeg() const { return deg; }
 };
 
+class Speed {
+    double xSpeed;
+    double ySpeed;
+    double yawSpeed;
+public:
+    Speed(double xSpeed, double ySpeed, double yawSpeed) : xSpeed(xSpeed), ySpeed(ySpeed), yawSpeed(yawSpeed) {};
+
+    double getXSpeed() const { return xSpeed; }
+
+    double getYSpeed() const { return ySpeed; }
+
+    double getYawSpeed() const { return yawSpeed; }
+};
 
 class Robot {
     PlayerClient robot;
@@ -34,7 +47,7 @@ class Robot {
     bool isBusy_ = false;
     std::mutex robotMutex_;
 
-    void goTo(Vertex);
+    int goTo(Vertex);
 
     Vertex *goToNearestPoint();
 
@@ -44,16 +57,20 @@ class Robot {
 
     int navigateTo(Vertex);
 
+    int isObstacle();
 
 
 public:
     Robot();
+
+    Speed getSpeed();
 
     Position getPos();
 
     double getSonar(int);
 
     int navigateTo(int);
+
 
     bool isBusy();
 
@@ -62,6 +79,8 @@ public:
     void readThread();
 
     void outputVoiceMessage();
+
+    void AvoidObstacles(Vertex v);
 };
 
 #endif //COORDIBOT_ROBOT_H

@@ -5,6 +5,9 @@
 #include <thread>
 #include <map>
 #include <float.h>
+#define AVOID_DISTANCE 0.35
+#define AVOID_DISTANCE_SIDE 0.35
+
 
 using namespace std;
 
@@ -22,6 +25,7 @@ double getRotationSpeed(double deg_diff) {
 
 
 Robot::Robot() : robot("localhost", 6665), pos2d(&robot, 0), sonarProxy(&robot, 0) {
+    robot.Read();
     // enable motors
     pos2d.SetMotorEnable(1);
     // request geometries
@@ -41,7 +45,8 @@ double Robot::getSonar(int index) {
     return sonarProxy[index];
 }
 
-void Robot::goTo(Vertex v) {
+
+int Robot::goTo(Vertex v) {
     cout << "Going to:::::::::::;" << v.getId() << endl;
     double vy = v.getY(), vx = v.getX();
     this->rotateToVertex(v);
@@ -58,7 +63,12 @@ void Robot::goTo(Vertex v) {
             this->setSpeed(0, 0);
             return;
         }
+        
         this->setSpeed(MAX_MOVEMENT_SPEED, 0);
+        if (this->isObstacle()) {
+                this->AvoidObstacles(v);
+                return -1;
+        }
         prev = distance;
     }
 }
@@ -79,28 +89,39 @@ int Robot::navigateTo(int id) {
     return 0;
 }
 
-// return -1 if can't navigate (no target id)
+// return -1 if can't navigate (no target id) or there is an obstacle.
 int Robot::navigateTo(Vertex v) {
     cout << "Navigatig to:::::::::::;" << v.getId() << endl;
     if (v.getId() == -1) {
         cout << "No vertex id to navigate to.";
         return -1;
     }
-    Vertex cur = *goToNearestPoint();
-    std::vector<Vertex> route = getRoute(cur, v, this->map); // currently uses mock start and goal points
-    for (auto it = route.begin() + 1; it != route.end(); ++it) {
-        if ((it + 1) != route.end()) {
-            auto check = (it + 1);
-            Position pos = this->getPos();
-            double deg = getDegree({pos.getX(), pos.getY()}, {check->getX(), check->getY()});
-            double deg_diff = getRadiansDistance(pos.getDeg(), deg);
-            cout << "def diff before checing:" << deg_diff << endl;
-            if (deg_diff < 0.005)
+    auto start_time = std::chrono::high_resolution_clock::now();
+    auto end_time = start_time + std::chrono::seconds(55);
+
+    while(std::chrono::high_resolution_clock::now() < end_time) {
+        int problem = 0;
+        Vertex* cur = goToNearestPoint();
+        if (cur != nullptr) {
+            std::vector<Vertex> route = getRoute(*cur, v, this->map); // currently uses mock start and goal points
+            for (auto it = route.begin() + 1; it != route.end(); ++it) {
+                auto check = (it + 1);
+                Position pos = this->getPos();
+                double deg = getDegree({pos.getX(), pos.getY()}, {check->getX(), check->getY()});
+                double deg_diff = getRadiansDistance(this->getPos().getDeg(), deg);
+                if (deg_diff < 0.005)
+                    continue;
+                if (this->goTo(*it) == -1) {
+                    problem = 1;
+                    break;
+                }
+            }
+            if (problem)
                 continue;
+            return 0;
         }
-        this->goTo(*(it));
     }
-    return 0;
+    return -1;
 }
 
 void Robot::rotateToVertex(Vertex v) {
@@ -110,7 +131,7 @@ void Robot::rotateToVertex(Vertex v) {
     double rotation_speed;
     while (true) {
         double deg_diff = getRadiansDistance(pos.getDeg(), deg);
-        cout << "DEG DIF: " << deg_diff << " Current degree: " << pos.getDeg() << " Targer degree: " << deg << endl;
+        //cout << "DEG DIF: " << deg_diff << " Current degree: " << pos.getDeg() << " Targer degree: " << deg << endl;
         if (deg_diff < 0.005) {
             this->setSpeed(0, 0);
             return;
@@ -134,6 +155,11 @@ Position Robot::getPos() {
     return {pos2d.GetXPos(), pos2d.GetYPos(), pos2d.GetYaw()};
 }
 
+Speed Robot::getSpeed() {
+    robot.Read();
+    return {pos2d.GetXSpeed(), pos2d.GetYSpeed(), pos2d.GetYawSpeed()};
+}
+
 std::map<int, Vertex *> *Robot::getMap() {
     return this->map;
 }
@@ -143,7 +169,8 @@ Vertex *Robot::goToNearestPoint() {
     Vertex cur_vertex(cur_pos.getX(), cur_pos.getY());
     Vertex *min_vertex = getNearestStop(cur_vertex, *this->map);
     if (getDistance(cur_vertex, *min_vertex) > NEARSET_POINT_THRESHOLD) {
-        this->goTo(*min_vertex);
+        if (this->goTo(*min_vertex) == -1)
+            return nullptr;
     }
     return min_vertex;
 }
@@ -154,10 +181,12 @@ bool Robot::isBusy() {
 
 void Robot::readThread() {
     while (true) {
-        this->robotMutex_.lock();
-        robot.Read();
-        this->robotMutex_.unlock();
-        std::this_thread::sleep_for(std::chrono::seconds(10));
+        if (!isBusy_) {
+            this->robotMutex_.lock();
+            robot.Read();
+            this->robotMutex_.unlock();
+            std::this_thread::sleep_for(std::chrono::seconds(10));
+        }
     }
 }
 
@@ -166,4 +195,43 @@ void Robot::outputVoiceMessage() {
     std::this_thread::sleep_for(std::chrono::seconds(30));
 }
 
+
+void Robot::AvoidObstacles(Vertex v) {
+    //will turn away at 60 degrees/sec
+    double avoidTurnSpeed = 1;
+    std::cout << "front" << getSonar(0) << std::endl;
+    std::cout << "left" << getSonar(1) << std::endl;
+    std::cout << "right" << getSonar(2) << std::endl;
+    for (int i = 0; i <= 4; i++) {
+        cout << " front: " << this->getSonar(0) << " left: " << this->getSonar(1) << " right: " << this->getSonar(2)
+             << endl;
+        double left = this->getSonar(1);
+        double right = this->getSonar(2);
+        if (this->getSonar(1) < AVOID_DISTANCE_SIDE && left < right) {
+            std::cout << "left" << std::endl;
+            //turn right
+            this->setSpeed(-0.6, (-1) * avoidTurnSpeed);
+
+        } else if (this->getSonar(2) < AVOID_DISTANCE_SIDE && right < left) {
+            std::cout << "right" << std::endl;
+            //turn left
+            this->setSpeed(-0.6, avoidTurnSpeed);
+
+        } else if (this->getSonar(0) < AVOID_DISTANCE) {
+            std::cout << "front" << std::endl;
+            //back off a little bit
+            this->setSpeed(-0.6, 0);
+        } else { this->setSpeed(0.6, 0); }
+        sleep(1);
+
+
+    }
+    std::cout << "d" << std::endl;
+}
+
+int Robot::isObstacle() {
+    if ((this->getSonar(0) <= AVOID_DISTANCE) || (this->getSonar(1) <= AVOID_DISTANCE_SIDE) ||
+        (this->getSonar(2) <= AVOID_DISTANCE_SIDE)) { return 1; }
+    return 0;
+}
 
