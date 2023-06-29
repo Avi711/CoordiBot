@@ -47,7 +47,7 @@ class Robot {
     bool isBusy_ = false;
     std::mutex robotMutex_;
 
-    void goTo(Vertex);
+    int goTo(Vertex);
 
     Vertex *goToNearestPoint();
 
@@ -56,6 +56,8 @@ class Robot {
     void setSpeed(double, double);
 
     int navigateTo(Vertex);
+
+    int isObstacle();
 
 
 public:

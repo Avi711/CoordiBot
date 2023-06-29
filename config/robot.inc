@@ -5,7 +5,7 @@ define bigbobs_sonar sensor
     #define the range bounds [min max]
     range [0 2.0]
     #define the angular field of view (by default in degrees)
-    fov 30
+    fov 2
     #define the color that ranges are drawn in the gui
     color_rgba [ 0 1 0 0.5]
 )
@@ -14,8 +14,8 @@ define bigbobs_sonars ranger
 (
   #one line for each sonar [xpos ypos zpos heading]
   bigbobs_sonar( pose [ 0.25 0 0 0])        # front
-  bigbobs_sonar( pose [ 0.125 0.25 0 30])   # left corner
-  bigbobs_sonar( pose [ 0.125 -0.25 0 -30]) # right corner
+  bigbobs_sonar( pose [ 0.125 0.25 0 0])   # left corner
+  bigbobs_sonar( pose [ 0.125 -0.25 0 0]) # right corner
 )
 
 define bigbob position
