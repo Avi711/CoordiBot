@@ -46,7 +46,8 @@ double getPlanCost(double distance, int numOfInvitess, std::vector<Vertex> route
     auto current = prev + 1;
     while (current != route.end()) {
         double deg = abs(getDegree({current->getX(), current->getY()}, {prev->getX(), prev->getY()}));
-        turning_cost += deg / ROTATION_SPEED_1 + 0.4;
+        turning_cost += deg / ROTATION_SPEED_1
+        +0.4;
         prev += 1;
         current += 1;
     }
@@ -137,23 +138,21 @@ void RestServer::handlePostMakeMeeting(http_request request) {
             auto plan = it->second;
             int planSize = plan.size() - 1;
             progress = {0, planSize};
-            int flag = 0;
             notified = "";
-            for (auto stop: plan) {
-                std::cout << "going to: " << stop.getId() << std::endl;
+            auto planIt = plan.begin() + 1;
+            for (; planIt != plan.end(); planIt += 1) {
+                std::cout << "going to: " << planIt->getId() << std::endl;
                 int currentProgress = std::get<0>(progress);
-                int res = bob->navigateTo(stop.getId());
+                int res = bob->navigateTo(planIt->getId());
                 if (res < 0) {
                     progress = {-1, planSize};
                     return;
                 }
-                notified += (std::to_string(stop.getId()) + ",");
-                if (flag == 1)
-                    progress = {currentProgress + 1, planSize};
-                if (stop.getId() < 1000 && stop.getId() > 99) {
+                notified += (std::to_string(planIt->getId()) + ",");
+                progress = {currentProgress + 1, planSize};
+                if (planIt->getId() < 1000 && planIt->getId() > 99) {
                     //bob->outputVoiceMessage();
                 }
-                flag = 1;
             }
             cachedPlans.clear();
         } else {

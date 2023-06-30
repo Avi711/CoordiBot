@@ -55,7 +55,7 @@ int Robot::goTo(Vertex v) {
         Position pos = this->getPos();
         double ry = pos.getY(), rx = pos.getX();
         distance = calculateEuclideanDistance(rx, ry, vx, vy);
-        if (distance > prev || (std::abs(vx - rx) < 0.21 && std::abs(vy - ry) < 0.21)) {
+        if ((std::abs(vx - rx) < 0.21 && std::abs(vy - ry) < 0.21) || distance > prev) {
             this->setSpeed(0, 0);
             return 0;
         }
