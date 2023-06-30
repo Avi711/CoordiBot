@@ -25,7 +25,7 @@ In the project directory, you should:
 
 By default, the server will run on localhost:6665
 
-You will be able to interact with the robot using the CoordiBot-App: https://github.com/Avi711/CoordiBot
+You will be able to interact with the robot using the CoordiBot-App: 
 
 ## Architecture
 <img src="https://github.com/Avi711/CoordiBot/assets/92336875/f96a18b2-eb1b-4402-a249-32ac5e773469" width="800">
