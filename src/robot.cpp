@@ -5,6 +5,7 @@
 #include <thread>
 #include <map>
 #include <float.h>
+
 #define AVOID_DISTANCE 0.35
 
 
@@ -44,9 +45,8 @@ double Robot::getSonar(int index) {
     return sonarProxy[index];
 }
 
-
 int Robot::goTo(Vertex v) {
-    cout << "Going to:::::::::::;" << v.getId() << endl;
+    cout << "Going to:" << v.getId() << endl;
     double vy = v.getY(), vx = v.getX();
     this->rotateToVertex(v);
     cout << "after rotate" << endl;
@@ -55,18 +55,16 @@ int Robot::goTo(Vertex v) {
     while (true) {
         Position pos = this->getPos();
         double ry = pos.getY(), rx = pos.getX();
-        distance = calculateEuclideanDistance(rx,ry,vx,vy);
-        //cout << "ddddddxxxxxxxx: " << std::abs(vx - rx) << "  ddddddyyyyyyy:  " << std::abs(vy - ry) << endl;
+        distance = calculateEuclideanDistance(rx, ry, vx, vy);
         if (distance > prev || (std::abs(vx - rx) < 0.21 && std::abs(vy - ry) < 0.21)) {
-            //cout << "dx: " << std::abs(vx - rx) << "  dy:  " << std::abs(vy - ry) << endl;
             this->setSpeed(0, 0);
             return 0;
         }
-        
+
         this->setSpeed(MAX_MOVEMENT_SPEED, 0);
         if (this->isObstacle()) {
-                this->AvoidObstacles(v);
-                return -1;
+            this->AvoidObstacles(v);
+            return -1;
         }
         prev = distance;
     }
@@ -90,17 +88,19 @@ int Robot::navigateTo(int id) {
 
 // return -1 if can't navigate (no target id) or there is an obstacle.
 int Robot::navigateTo(Vertex v) {
-    cout << "Navigatig to:::::::::::;" << v.getId() << endl;
+    cout << "Navigatig to:" << v.getId() << endl;
     if (v.getId() == -1) {
         cout << "No vertex id to navigate to.";
         return -1;
     }
-    int estimated_time = (abs(this->getPos().getX() - v.getX()) + abs(this->getPos().getY() + v.getY()) / (MAX_MOVEMENT_SPEED / 2)) * 5 + 40;
+    int estimated_time =
+            (abs(this->getPos().getX() - v.getX()) + abs(this->getPos().getY() + v.getY()) / (MAX_MOVEMENT_SPEED / 2)) *
+            5 + 40;
     auto start_time = std::chrono::high_resolution_clock::now();
     auto end_time = start_time + std::chrono::seconds(estimated_time);
-    while(std::chrono::high_resolution_clock::now() < end_time) {
+    while (std::chrono::high_resolution_clock::now() < end_time) {
         int problem = 0;
-        Vertex* cur = goToNearestPoint();
+        Vertex *cur = goToNearestPoint();
         if (cur != nullptr) {
             std::vector<Vertex> route = getRoute(*cur, v, this->map); // currently uses mock start and goal points
             for (auto it = route.begin() + 1; it != route.end(); ++it) {
@@ -124,13 +124,12 @@ int Robot::navigateTo(Vertex v) {
 }
 
 void Robot::rotateToVertex(Vertex v) {
-    cout << "Rotating to:::::::::::;" << v.getId() << endl;
+    cout << "Rotating to:" << v.getId() << endl;
     Position pos = this->getPos();
     double deg = getDegree({pos.getX(), pos.getY()}, {v.getX(), v.getY()});
     double rotation_speed;
     while (true) {
         double deg_diff = getRadiansDistance(pos.getDeg(), deg);
-        cout << "DEG DIF: " << deg_diff << " Current degree: " << pos.getDeg() << " Targer degree: " << deg << endl;
         if (deg_diff < 0.005) {
             this->setSpeed(0, 0);
             return;
@@ -198,26 +197,17 @@ void Robot::outputVoiceMessage() {
 void Robot::AvoidObstacles(Vertex v) {
     //will turn away at 60 degrees/sec
     double avoidTurnSpeed = 1;
-    std::cout << "front" << getSonar(0) << std::endl;
-    std::cout << "left" << getSonar(1) << std::endl;
-    std::cout << "right" << getSonar(2) << std::endl;
     for (int i = 0; i <= 4; i++) {
-        cout << " front: " << this->getSonar(0) << " left: " << this->getSonar(1) << " right: " << this->getSonar(2)
-             << endl;
         double left = this->getSonar(1);
         double right = this->getSonar(2);
         if (this->getSonar(1) < AVOID_DISTANCE && left < right) {
-            std::cout << "left" << std::endl;
             //turn right
             this->setSpeed(-0.6, (-1) * avoidTurnSpeed);
 
-        } else if (this->getSonar(2) < AVOID_DISTANCE && right < left) {
-            std::cout << "right" << std::endl;
-            //turn left
+        } else if (this->getSonar(2) < AVOID_DISTANCE && right < left) {//turn left
             this->setSpeed(-0.6, avoidTurnSpeed);
 
         } else if (this->getSonar(0) < AVOID_DISTANCE) {
-            std::cout << "front" << std::endl;
             //back off a little bit
             this->setSpeed(-0.6, 0);
         } else { this->setSpeed(0.6, 0); }
@@ -225,7 +215,6 @@ void Robot::AvoidObstacles(Vertex v) {
 
 
     }
-    std::cout << "d" << std::endl;
 }
 
 int Robot::isObstacle() {

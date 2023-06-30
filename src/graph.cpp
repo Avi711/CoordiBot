@@ -159,10 +159,6 @@ getBestPlan(Vertex current, std::vector<int> &destinations, std::map<int, Vertex
         bestPlan.push_back(lastStop);
         current = lastStop;
     }
-//    bestPlan.unique([](const Vertex &a, const Vertex &b) {
-//        return a.getId() == b.getId();
-//    });
-    for (auto it: bestPlan) { std::cout << it.getId() << " "; }
     return std::make_tuple(std::move(bestPlan), planDist);
 }
 
