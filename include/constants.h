@@ -32,6 +32,7 @@
 #define STATUS_PATH "/status"
 #define MAKE_MEETING_PATH "/makeMeeting"
 #define ARRANGE_MEETING_PATH "/arrangeMeeting"
+#define NOTIFIED_PATH "/notified"
 
 #define INVITED_PARAM "invited"
 #define ESTIMATED_TIME_PARAM "estimatedTime"
@@ -40,6 +41,7 @@
 #define MSG_PARAM "msg"
 #define DATA_PARAM "data"
 #define REQUESTER_ID_PARAM "requester_id"
+#define NOTIFIED_PARAM "notified"
 
 #define INVITED_ERROR_MSG "Missing invited param"
 #define REQUESTER_ID_ERROR_MSG "Missing requester_id param"

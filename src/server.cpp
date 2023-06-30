@@ -111,6 +111,8 @@ void RestServer::handleGet(http_request request) {
         handleGetStatus(request);
     } else if (path == PROGRESS_PATH) {
         handleGetProgress(request);
+    } else if (path == NOTIFIED_PATH) {
+        handleNotified(request);
     } else {
         handleNotFound(request);
     }
@@ -144,11 +146,14 @@ void RestServer::handlePostMakeMeeting(http_request request) {
                     progress = {-1, planSize};
                     return;
                 }
+                notified += (std::to_string(stop.getId()) + ",");
                 progress = {currentProgress + 1, planSize};
                 if (stop.getId() < 1000) {
                     bob->outputVoiceMessage();
                 }
             }
+            notified = "";
+            cachedPlans.clear();
         } else {
             response[DATA_PARAM] = json::value::object(
                     {{MSG_PARAM, json::value::string(NONE_MEETING_ERROR_MSG)}});
@@ -173,5 +178,12 @@ void RestServer::handleGetProgress(http_request request) {
     json::value response;
     response[DATA_PARAM] = json::value::object(
             {{PROGRESS_PARAM, std::get<0>(progress) / std::get<1>(progress)}});
+    request.reply(status_codes::OK, response);
+}
+
+void RestServer::handleNotified(http_request request) {
+    json::value response;
+    response[DATA_PARAM] = json::value::object(
+            {{NOTIFIED_PARAM, json::value::string(notified)}});
     request.reply(status_codes::OK, response);
 }
