@@ -49,7 +49,6 @@ int Robot::goTo(Vertex v) {
     cout << "Going to:" << v.getId() << endl;
     double vy = v.getY(), vx = v.getX();
     this->rotateToVertex(v);
-    cout << "after rotate" << endl;
     double prev = DBL_MAX;
     double distance = 0;
     while (true) {

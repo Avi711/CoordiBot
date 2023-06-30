@@ -54,7 +54,6 @@ vector<Vertex> Node::getPath() {
     return res;
 }
 
-// To do
 std::vector<Node *> Node::expand(std::map<int, Vertex *> *mp) const {
     std::vector<Node *> temp;
     vector<int> *v_list = mp->at(this->state)->getNeighbors();
