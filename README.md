@@ -11,17 +11,17 @@ In the project directory, you should:
 
 #### `Open new terminal in the main project directory:`
 
-### `0. Modify the server address in the `/include/constants.h` file to your ip`
+#### `0. Modify the server address in the `/include/constants.h` file to your ip`
 
-### `1. cd config`
+#### `1. cd config`
 
-### `2. player main.cfg`
+#### `2. player main.cfg`
 
 #### `with new terminal in the main project directory:`
 
-### `3. make`
+#### `3. make`
 
-### `4. ./main`
+#### `4. ./main`
 
 By default, the server will run on localhost:6665
 
