@@ -57,7 +57,7 @@ int Robot::goTo(Vertex v) {
         double ry = pos.getY(), rx = pos.getX();
         distance = calculateEuclideanDistance(rx,ry,vx,vy);
         //cout << "ddddddxxxxxxxx: " << std::abs(vx - rx) << "  ddddddyyyyyyy:  " << std::abs(vy - ry) << endl;
-        if (distance > prev || (std::abs(vx - rx) < 0.15 && std::abs(vy - ry) < 0.15)) {
+        if (distance > prev || (std::abs(vx - rx) < 0.21 && std::abs(vy - ry) < 0.21)) {
             //cout << "dx: " << std::abs(vx - rx) << "  dy:  " << std::abs(vy - ry) << endl;
             this->setSpeed(0, 0);
             return 0;
@@ -83,9 +83,9 @@ int Robot::navigateTo(int id) {
     }
     this->isBusy_ = true;
     Vertex v = *this->map->at(id);
-    this->navigateTo(v);
+    int res = this->navigateTo(v);
     this->isBusy_ = false;
-    return 0;
+    return res;
 }
 
 // return -1 if can't navigate (no target id) or there is an obstacle.

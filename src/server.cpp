@@ -99,7 +99,7 @@ void RestServer::handlePostArrangeMeeting(http_request request) {
             request.reply(status_codes::OK, response);
         } catch (const std::exception &e) {
             response[DATA_PARAM] = json::value::object(
-                    {{MSG_PARAM, json::value::string("e.what()")}});
+                    {{MSG_PARAM, json::value::string(e.what())}});
             request.reply(status_codes::Gone, response);
         }
     });
@@ -145,8 +145,8 @@ void RestServer::handlePostMakeMeeting(http_request request) {
                     return;
                 }
                 progress = {currentProgress + 1, planSize};
-                if (stop.getId() < 1000) {
-                    bob->outputVoiceMessage();
+                if (stop.getId() < 1000 && stop.getId() > 99) {
+                    //bob->outputVoiceMessage();
                 }
             }
         } else {
@@ -172,6 +172,6 @@ void RestServer::handlePost(http_request request) {
 void RestServer::handleGetProgress(http_request request) {
     json::value response;
     response[DATA_PARAM] = json::value::object(
-            {{PROGRESS_PARAM, std::get<0>(progress) / std::get<1>(progress)}});
+            {{PROGRESS_PARAM, ceil((std::get<0>(progress) / std::get<1>(progress) * 100))}});
     request.reply(status_codes::OK, response);
 }
