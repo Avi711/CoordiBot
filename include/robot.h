@@ -80,6 +80,8 @@ public:
 
     void outputVoiceMessage();
 
+    void openDoor();
+
     void AvoidObstacles(Vertex v);
 };
 

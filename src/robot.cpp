@@ -103,6 +103,9 @@ int Robot::navigateTo(Vertex v) {
         if (cur != nullptr) {
             std::vector<Vertex> route = getRoute(*cur, v, this->map); // currently uses mock start and goal points
             for (auto it = route.begin() + 1; it != route.end(); ++it) {
+                if (to_string(abs(it->getId())).length() == 3) {
+                    this->openDoor();
+                }
                 auto check = (it + 1);
                 Position pos = this->getPos();
                 double deg = getDegree({pos.getX(), pos.getY()}, {check->getX(), check->getY()});
@@ -220,5 +223,9 @@ int Robot::isObstacle() {
     if ((this->getSonar(0) <= AVOID_DISTANCE) || (this->getSonar(1) <= AVOID_DISTANCE) ||
         (this->getSonar(2) <= AVOID_DISTANCE)) { return 1; }
     return 0;
+}
+
+void Robot::openDoor() {
+    cout << "Please open the door" << endl;
 }
 

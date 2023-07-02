@@ -6,7 +6,8 @@
 
 #define PLAYER_PORT 6665
 #define PLAYER_IP "localhost"
-#define SERVER_IP "http://127.0.0.1:8080"
+#define SERVER_ADDRESS "http://127.0.0.1:8080"
+
 
 
 // Rotation

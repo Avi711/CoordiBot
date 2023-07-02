@@ -1,6 +1,6 @@
 #include "../include/server.h"
 
-RestServer::RestServer(Robot *bob_) : listener_("http://192.168.56.101:8080") {
+RestServer::RestServer(Robot *bob_) : listener_(SERVER_ADDRESS) {
     listener_.support(methods::GET, std::bind(&RestServer::handleGet, this, std::placeholders::_1));
     listener_.support(methods::POST, std::bind(&RestServer::handlePost, this, std::placeholders::_1));
     bob = bob_;
